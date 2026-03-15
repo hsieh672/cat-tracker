@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="貓咪健康">
+<meta name="theme-color" content="#ffffff">
+<title>貓咪健康管理</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg2: #f5f5f3;
+    --bg3: #eeede9;
+    --text: #1a1a18;
+    --text2: #6b6b67;
+    --text3: #a0a09b;
+    --border: rgba(0,0,0,0.1);
+    --border2: rgba(0,0,0,0.18);
+    --green: #1D9E75;
+    --green-bg: #E1F5EE;
+    --green-text: #0F6E56;
+    --blue: #185FA5;
+    --blue-bg: #E6F1FB;
+    --blue-text: #185FA5;
+    --amber-bg: #FAEEDA;
+    --amber-text: #854F0B;
+    --red: #E24B4A;
+    --red-bg: #FCEBEB;
+    --red-text: #A32D2D;
+    --purple-bg: #EEEDFE;
+    --purple-text: #534AB7;
+    --pink-bg: #FBEAF0;
+    --pink-text: #993556;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1c1c1a;
+      --bg2: #252523;
+      --bg3: #2e2e2b;
+      --text: #f0efe9;
+      --text2: #a0a09b;
+      --text3: #6b6b67;
+      --border: rgba(255,255,255,0.1);
+      --border2: rgba(255,255,255,0.18);
+      --green-bg: #0a3326;
+      --green-text: #5DCAA5;
+      --blue-bg: #0c2a47;
+      --blue-text: #85B7EB;
+      --amber-bg: #3d2800;
+      --amber-text: #FAC775;
+      --red-bg: #3d1010;
+      --red-text: #F09595;
+      --purple-bg: #1e1a4a;
+      --purple-text: #AFA9EC;
+      --pink-bg: #3d0f22;
+      --pink-text: #ED93B1;
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; background: var(--bg); color: var(--text); font-family: -apple-system, 'PingFang TC', 'Helvetica Neue', sans-serif; }
+  body { display: flex; flex-direction: column; max-width: 520px; margin: 0 auto; }
+
+  /* Header */
+  .header { padding: 56px 20px 0; background: var(--bg); }
+  .header-inner { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .cat-name-wrap { display: flex; align-items: center; gap: 10px; }
+  .cat-avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--green-bg); display: flex; align-items: center; justify-content: center; font-size: 20px; }
+  .cat-name { font-size: 20px; font-weight: 600; letter-spacing: -0.3px; }
+  .cat-name-edit { background: none; border: none; font-size: 13px; color: var(--text3); cursor: pointer; padding: 4px 8px; border-radius: 6px; }
+  .cat-name-edit:active { background: var(--bg2); }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 6px; padding: 0 20px 16px; background: var(--bg); }
+  .tab { flex: 1; padding: 9px 6px; border: 0.5px solid var(--border); border-radius: var(--radius-sm); background: transparent; cursor: pointer; font-size: 13px; color: var(--text2); font-family: inherit; transition: all .15s; }
+  .tab.active { background: var(--text); color: var(--bg); border-color: var(--text); font-weight: 500; }
+
+  /* Scroll content */
+  .content { flex: 1; overflow-y: auto; padding: 0 20px calc(80px + var(--safe-bottom)); -webkit-overflow-scrolling: touch; }
+  .panel { display: none; padding-top: 4px; }
+  .panel.active { display: block; }
+
+  /* Cards */
+  .card { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 12px; }
+  .section-label { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 12px; }
+
+  /* Goal row */
+  .goal-row { display: flex; align-items: center; justify-content: space-between; }
+  .goal-row label { font-size: 14px; color: var(--text2); }
+  .goal-input { width: 80px; text-align: right; border: 0.5px solid var(--border2); border-radius: 8px; padding: 6px 10px; font-size: 15px; font-weight: 500; background: var(--bg2); color: var(--text); font-family: inherit; }
+
+  /* Food rows */
+  .food-item { border-bottom: 0.5px solid var(--border); padding: 10px 0; }
+  .food-item:last-child { border-bottom: none; }
+  .food-name-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .food-name-input { flex: 1; border: none; background: transparent; font-size: 15px; color: var(--text); font-family: inherit; outline: none; }
+  .food-name-input::placeholder { color: var(--text3); }
+  .del-btn { background: none; border: none; color: var(--text3); font-size: 16px; cursor: pointer; padding: 2px 4px; line-height: 1; }
+  .food-amounts { display: flex; gap: 8px; }
+  .amount-field { flex: 1; background: var(--bg2); border: 0.5px solid var(--border); border-radius: 8px; padding: 7px 10px; }
+  .amount-field label { display: block; font-size: 10px; color: var(--text3); margin-bottom: 2px; }
+  .amount-field input { width: 100%; border: none; background: transparent; font-size: 14px; color: var(--text); font-family: inherit; outline: none; font-weight: 500; }
+  .add-food-btn { width: 100%; margin-top: 10px; padding: 10px; background: none; border: 0.5px dashed var(--border2); border-radius: var(--radius-sm); color: var(--text2); font-size: 14px; cursor: pointer; font-family: inherit; }
+  .add-food-btn:active { background: var(--bg2); }
+
+  /* Total */
+  .total-section { padding-top: 12px; border-top: 0.5px solid var(--border); margin-top: 4px; }
+  .total-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+  .total-label { font-size: 14px; color: var(--text2); }
+  .total-num { font-size: 28px; font-weight: 600; letter-spacing: -0.5px; }
+  .total-unit { font-size: 14px; font-weight: 400; color: var(--text2); margin-left: 2px; }
+  .progress-bg { height: 8px; background: var(--bg3); border-radius: 99px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 99px; background: var(--green); transition: width .4s, background .3s; }
+  .progress-fill.over { background: var(--red); }
+  .progress-meta { display: flex; justify-content: space-between; font-size: 12px; color: var(--text3); margin-top: 5px; }
+
+  /* Events */
+  .event-form-card { background: var(--bg2); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 12px; }
+  .form-row { display: flex; gap: 8px; margin-bottom: 8px; }
+  .form-row:last-child { margin-bottom: 0; }
+  select, .date-input, .note-input {
+    flex: 1; padding: 10px 12px; border: 0.5px solid var(--border2); border-radius: var(--radius-sm);
+    background: var(--bg); color: var(--text); font-family: inherit; font-size: 14px; outline: none;
+    -webkit-appearance: none; appearance: none;
+  }
+  select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23999' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px; }
+  .save-btn { width: 100%; padding: 12px; background: var(--text); color: var(--bg); border: none; border-radius: var(--radius-sm); font-size: 15px; font-weight: 500; cursor: pointer; font-family: inherit; margin-top: 8px; }
+  .save-btn:active { opacity: 0.8; }
+
+  .event-item { display: flex; align-items: flex-start; gap: 10px; padding: 12px 0; border-bottom: 0.5px solid var(--border); }
+  .event-item:last-child { border-bottom: none; }
+  .badge { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 99px; white-space: nowrap; }
+  .badge.bath { background: var(--green-bg); color: var(--green-text); }
+  .badge.vet { background: var(--blue-bg); color: var(--blue-text); }
+  .badge.checkup { background: var(--amber-bg); color: var(--amber-text); }
+  .badge.vaccine { background: var(--pink-bg); color: var(--pink-text); }
+  .badge.grooming { background: var(--purple-bg); color: var(--purple-text); }
+  .badge.other { background: var(--bg3); color: var(--text2); }
+  .event-body { flex: 1; }
+  .event-date { font-size: 12px; color: var(--text3); margin-top: 2px; }
+  .event-note { font-size: 13px; color: var(--text2); margin-top: 3px; }
+  .event-del { background: none; border: none; color: var(--text3); font-size: 14px; cursor: pointer; padding: 2px; }
+  .empty-msg { text-align: center; padding: 2rem; font-size: 14px; color: var(--text3); }
+
+  /* Overview */
+  .metrics { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px; margin-bottom: 12px; }
+  .metric { background: var(--bg2); border-radius: var(--radius-sm); padding: 12px; }
+  .metric-label { font-size: 11px; color: var(--text3); margin-bottom: 4px; }
+  .metric-val { font-size: 18px; font-weight: 600; }
+  .upcoming-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 0.5px solid var(--border); font-size: 14px; gap: 8px; }
+  .upcoming-item:last-child { border-bottom: none; }
+  .days-pill { font-size: 11px; font-weight: 500; padding: 3px 9px; border-radius: 99px; white-space: nowrap; flex-shrink: 0; }
+  .days-pill.ok { background: var(--green-bg); color: var(--green-text); }
+  .days-pill.soon { background: var(--amber-bg); color: var(--amber-text); }
+  .days-pill.overdue { background: var(--red-bg); color: var(--red-text); }
+  .upcoming-date { font-size: 12px; color: var(--text3); }
+
+  /* Name edit modal */
+  .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: flex-end; z-index: 100; }
+  .modal { background: var(--bg); border-radius: 20px 20px 0 0; padding: 24px 20px calc(24px + var(--safe-bottom)); width: 100%; }
+  .modal h3 { font-size: 17px; font-weight: 600; margin-bottom: 16px; }
+  .modal input { width: 100%; padding: 12px; border: 0.5px solid var(--border2); border-radius: var(--radius-sm); font-size: 16px; color: var(--text); background: var(--bg2); font-family: inherit; outline: none; margin-bottom: 12px; }
+  .modal-btns { display: flex; gap: 8px; }
+  .modal-btns button { flex: 1; padding: 12px; border-radius: var(--radius-sm); font-size: 15px; font-weight: 500; cursor: pointer; font-family: inherit; border: 0.5px solid var(--border2); }
+  .modal-cancel { background: var(--bg2); color: var(--text2); }
+  .modal-save { background: var(--text); color: var(--bg); border-color: var(--text) !important; }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="cat-name-wrap">
+      <div class="cat-avatar">🐱</div>
+      <span class="cat-name" id="cat-name-display">我的貓咪</span>
+    </div>
+    <button class="cat-name-edit" onclick="openNameEdit()">編輯名字</button>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('calories')">熱量</button>
+    <button class="tab" onclick="switchTab('events')">事項</button>
+    <button class="tab" onclick="switchTab('overview')">總覽</button>
+  </div>
+</div>
+
+<div class="content">
+  <!-- Calories -->
+  <div id="panel-calories" class="panel active">
+    <div class="card">
+      <div class="section-label">每日熱量目標</div>
+      <div class="goal-row">
+        <label>目標大卡 / 天</label>
+        <input class="goal-input" type="number" id="daily-goal" value="250" min="50" max="2000" inputmode="numeric" oninput="save();updateCalc()">
+      </div>
+    </div>
+    <div class="card">
+      <div class="section-label">今日食物</div>
+      <div id="food-list"></div>
+      <button class="add-food-btn" onclick="addFood()">＋ 新增食物</button>
+      <div class="total-section">
+        <div class="total-row">
+          <span class="total-label">今日合計</span>
+          <span><span class="total-num" id="total-kcal">0</span><span class="total-unit">大卡</span></span>
+        </div>
+        <div class="progress-bg"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+        <div class="progress-meta"><span id="prog-left">—</span><span id="prog-pct">0%</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Events -->
+  <div id="panel-events" class="panel">
+    <div class="event-form-card">
+      <div class="section-label">新增記錄</div>
+      <div class="form-row">
+        <select id="evt-type">
+          <option value="bath">🛁 洗澡</option>
+          <option value="vet">🏥 看醫生</option>
+          <option value="checkup">🩺 健康檢查</option>
+          <option value="vaccine">💉 打疫苗</option>
+          <option value="grooming">✂️ 美容</option>
+          <option value="other">📋 其他</option>
+        </select>
+        <input class="date-input" type="date" id="evt-date">
+      </div>
+      <div class="form-row">
+        <input class="note-input" type="text" id="evt-note" placeholder="備註（可選）">
+      </div>
+      <button class="save-btn" onclick="addEvent()">儲存記錄</button>
+    </div>
+    <div class="card">
+      <div class="section-label">歷史記錄</div>
+      <div id="event-list"></div>
+    </div>
+  </div>
+
+  <!-- Overview -->
+  <div id="panel-overview" class="panel">
+    <div class="card">
+      <div class="section-label">今日概況</div>
+      <div class="metrics">
+        <div class="metric"><div class="metric-label">今日熱量</div><div class="metric-val" id="ov-kcal">—</div></div>
+        <div class="metric"><div class="metric-label">本週事項</div><div class="metric-val" id="ov-events">0</div></div>
+        <div class="metric"><div class="metric-label">上次洗澡</div><div class="metric-val" id="ov-bath" style="font-size:13px;line-height:1.4">—</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="section-label">提醒事項</div>
+      <div id="upcoming-list"></div>
+    </div>
+    <div class="card">
+      <div class="section-label">最近記錄</div>
+      <div id="recent-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Name edit modal -->
+<div class="modal-bg hidden" id="name-modal" onclick="closeNameEdit(event)">
+  <div class="modal">
+    <h3>貓咪名字</h3>
+    <input type="text" id="name-input" placeholder="輸入貓咪名字" maxlength="20">
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="closeModal()">取消</button>
+      <button class="modal-save" onclick="saveName()">儲存</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const typeLabels = {bath:'洗澡',vet:'看醫生',checkup:'健康檢查',vaccine:'打疫苗',grooming:'美容',other:'其他'};
+
+function load() {
+  try { return JSON.parse(localStorage.getItem('cat-tracker') || '{}'); } catch(e) { return {}; }
+}
+function save() {
+  const d = load();
+  d.catName = document.getElementById('cat-name-display').textContent;
+  d.goal = +document.getElementById('daily-goal').value || 250;
+  d.foods = foods;
+  d.events = events;
+  localStorage.setItem('cat-tracker', JSON.stringify(d));
+}
+
+let data = load();
+let foods = data.foods || [{name:'主食罐頭',grams:80,kcalPer100:90},{name:'飼料',grams:30,kcalPer100:350}];
+let events = data.events || [];
+const today = new Date().toISOString().split('T')[0];
+
+document.getElementById('evt-date').value = today;
+if (data.catName) document.getElementById('cat-name-display').textContent = data.catName;
+if (data.goal) document.getElementById('daily-goal').value = data.goal;
+
+function switchTab(t) {
+  document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('active',['calories','events','overview'][i]===t));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+t).classList.add('active');
+  if(t==='overview') renderOverview();
+}
+
+function renderFoods() {
+  const el = document.getElementById('food-list');
+  el.innerHTML = foods.map((f,i) => `
+    <div class="food-item">
+      <div class="food-name-row">
+        <input class="food-name-input" type="text" value="${f.name}" placeholder="食物名稱"
+          oninput="foods[${i}].name=this.value;save()">
+        <button class="del-btn" onclick="removeFood(${i})">✕</button>
+      </div>
+      <div class="food-amounts">
+        <div class="amount-field">
+          <label>份量</label>
+          <input type="number" value="${f.grams}" min="0" inputmode="decimal" placeholder="0"
+            oninput="foods[${i}].grams=+this.value;save();updateCalc()"> <span style="font-size:11px;color:var(--text3)">克</span>
+        </div>
+        <div class="amount-field">
+          <label>熱量</label>
+          <input type="number" value="${f.kcalPer100}" min="0" inputmode="decimal" placeholder="0"
+            oninput="foods[${i}].kcalPer100=+this.value;save();updateCalc()"> <span style="font-size:11px;color:var(--text3)">大卡/100g</span>
+        </div>
+      </div>
+    </div>`).join('');
+  updateCalc();
+}
+
+function addFood() { foods.push({name:'',grams:0,kcalPer100:0}); save(); renderFoods(); }
+function removeFood(i) { foods.splice(i,1); save(); renderFoods(); }
+
+function updateCalc() {
+  const total = Math.round(foods.reduce((s,f)=>s+(f.grams*f.kcalPer100/100),0));
+  const goal = +document.getElementById('daily-goal').value || 250;
+  const pct = Math.min(Math.round(total/goal*100),200);
+  const over = total > goal;
+  document.getElementById('total-kcal').textContent = total;
+  const fill = document.getElementById('prog-fill');
+  fill.style.width = Math.min(pct,100)+'%';
+  fill.classList.toggle('over', over);
+  const rem = goal - total;
+  document.getElementById('prog-left').textContent = over ? `超出 ${Math.abs(rem)} 大卡` : `剩餘 ${rem} 大卡`;
+  document.getElementById('prog-pct').textContent = pct+'%';
+}
+
+function renderEvents() {
+  const el = document.getElementById('event-list');
+  const sorted = [...events].sort((a,b)=>b.date.localeCompare(a.date));
+  if(!sorted.length){el.innerHTML='<div class="empty-msg">尚無記錄</div>';return;}
+  el.innerHTML = sorted.map(e=>`
+    <div class="event-item">
+      <span class="badge ${e.type}">${typeLabels[e.type]}</span>
+      <div class="event-body">
+        <div class="event-date">${e.date}</div>
+        ${e.note?`<div class="event-note">${e.note}</div>`:''}
+      </div>
+      <button class="event-del" onclick="delEvent('${e.id}')">✕</button>
+    </div>`).join('');
+}
+
+function addEvent() {
+  const type = document.getElementById('evt-type').value;
+  const date = document.getElementById('evt-date').value;
+  const note = document.getElementById('evt-note').value.trim();
+  if(!date) return;
+  events.push({id:Date.now()+'',type,date,note});
+  document.getElementById('evt-note').value = '';
+  save(); renderEvents();
+}
+
+function delEvent(id) {
+  if(confirm('確定刪除這筆記錄？')) { events = events.filter(e=>e.id!==id); save(); renderEvents(); }
+}
+
+function renderOverview() {
+  const now = new Date();
+  const weekAgo = new Date(now-7*864e5).toISOString().split('T')[0];
+  document.getElementById('ov-events').textContent = events.filter(e=>e.date>=weekAgo).length;
+  const baths = events.filter(e=>e.type==='bath').sort((a,b)=>b.date.localeCompare(a.date));
+  document.getElementById('ov-bath').textContent = baths.length ? baths[0].date : '—';
+  const total = Math.round(foods.reduce((s,f)=>s+(f.grams*f.kcalPer100/100),0));
+  document.getElementById('ov-kcal').textContent = total ? total+' 卡' : '—';
+
+  const rules = {bath:{days:14,label:'洗澡'},vet:{days:365,label:'看醫生'},checkup:{days:365,label:'健康檢查'},vaccine:{days:365,label:'打疫苗'}};
+  const upcoming = [];
+  Object.entries(rules).forEach(([t,r])=>{
+    const last = events.filter(e=>e.type===t).sort((a,b)=>b.date.localeCompare(a.date));
+    if(last.length) {
+      const next = new Date(last[0].date);
+      next.setDate(next.getDate()+r.days);
+      const diff = Math.round((next-now)/864e5);
+      upcoming.push({label:r.label,date:next.toISOString().split('T')[0],diff});
+    }
+  });
+  upcoming.sort((a,b)=>a.diff-b.diff);
+  const upEl = document.getElementById('upcoming-list');
+  if(!upcoming.length){upEl.innerHTML='<div class="empty-msg">新增事項後顯示提醒</div>';}
+  else {
+    upEl.innerHTML = upcoming.map(u=>{
+      const cls = u.diff<0?'overdue':u.diff<=7?'soon':'ok';
+      const txt = u.diff<0?`逾期 ${Math.abs(u.diff)} 天`:u.diff===0?'今天':'還有 '+u.diff+' 天';
+      return `<div class="upcoming-item">
+        <span>${u.label}</span>
+        <span class="upcoming-date">${u.date}</span>
+        <span class="days-pill ${cls}">${txt}</span>
+      </div>`;
+    }).join('');
+  }
+
+  const recent = [...events].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
+  const reEl = document.getElementById('recent-list');
+  if(!recent.length){reEl.innerHTML='<div class="empty-msg">尚無記錄</div>';}
+  else {
+    reEl.innerHTML = recent.map(e=>`
+      <div class="upcoming-item">
+        <span class="badge ${e.type}">${typeLabels[e.type]}</span>
+        <span style="flex:1;font-size:13px;color:var(--text2);margin:0 8px">${e.note||'—'}</span>
+        <span class="upcoming-date">${e.date}</span>
+      </div>`).join('');
+  }
+}
+
+function openNameEdit() {
+  document.getElementById('name-input').value = document.getElementById('cat-name-display').textContent;
+  document.getElementById('name-modal').classList.remove('hidden');
+  setTimeout(()=>document.getElementById('name-input').focus(),100);
+}
+function closeModal() { document.getElementById('name-modal').classList.add('hidden'); }
+function closeNameEdit(e) { if(e.target===document.getElementById('name-modal')) closeModal(); }
+function saveName() {
+  const v = document.getElementById('name-input').value.trim();
+  if(v) document.getElementById('cat-name-display').textContent = v;
+  save(); closeModal();
+}
+
+renderFoods();
+renderEvents();
+</script>
+</body>
+</html>
