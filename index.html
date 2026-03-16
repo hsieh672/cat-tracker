@@ -24,8 +24,8 @@
   --r:14px;--rs:9px;--safe:env(safe-area-inset-bottom,0px);
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,'Helvetica Neue',sans-serif}
-body{display:flex;flex-direction:column;max-width:520px;margin:0 auto}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,'Helvetica Neue',sans-serif;overflow-x:hidden}
+body{display:flex;flex-direction:column;max-width:520px;margin:0 auto;width:100%}
 
 /* Header */
 .hdr{padding:52px 20px 0;background:var(--bg);border-bottom:.5px solid var(--border)}
@@ -45,8 +45,8 @@ body{display:flex;flex-direction:column;max-width:520px;margin:0 auto}
 .tab.active{color:var(--accent);border-bottom-color:var(--accent)}
 
 /* Content */
-.content{flex:1;overflow-y:auto;padding:12px 20px calc(60px + var(--safe));-webkit-overflow-scrolling:touch}
-.panel{display:none}.panel.active{display:block}
+.content{flex:1;overflow-y:auto;overflow-x:hidden;padding:12px 20px calc(60px + var(--safe));-webkit-overflow-scrolling:touch}
+.panel{display:none;width:100%}.panel.active{display:block}
 .card{background:var(--bg);border:.5px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:12px}
 .card-alt{background:var(--bg2);border:.5px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:12px}
 .slabel{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px}
@@ -66,9 +66,9 @@ body{display:flex;flex-direction:column;max-width:520px;margin:0 auto}
 
 /* Add food form */
 .add-food-form{background:var(--bg2);border-radius:var(--rs);padding:12px;margin-top:8px}
-.add-food-form .form-row{display:flex;gap:8px;margin-bottom:8px}
+.add-food-form .form-row{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap}
 .add-food-form .form-row:last-child{margin-bottom:0}
-.aff-input{flex:1;padding:9px 10px;border:.5px solid var(--border2);border-radius:8px;background:var(--bg);color:var(--text);font-family:inherit;font-size:14px;outline:none}
+.aff-input{flex:1;min-width:0;padding:9px 10px;border:.5px solid var(--border2);border-radius:8px;background:var(--bg);color:var(--text);font-family:inherit;font-size:14px;outline:none}
 .aff-input::placeholder{color:var(--text3)}
 .aff-label{font-size:10px;color:var(--text3);display:block;margin-bottom:3px;text-transform:uppercase;letter-spacing:.05em}
 .aff-field{flex:1}
@@ -105,7 +105,7 @@ body{display:flex;flex-direction:column;max-width:520px;margin:0 auto}
 .form-row{display:flex;gap:8px;margin-bottom:8px}
 .form-row:last-child{margin-bottom:0}
 .form-label{font-size:11px;color:var(--text3);margin-bottom:4px;display:block}
-select,.f-date,.f-note{flex:1;padding:10px 12px;border:.5px solid var(--border2);border-radius:var(--rs);background:var(--bg);color:var(--text);font-family:inherit;font-size:14px;outline:none;-webkit-appearance:none;appearance:none}
+select,.f-date,.f-note{flex:1;min-width:0;padding:10px 12px;border:.5px solid var(--border2);border-radius:var(--rs);background:var(--bg);color:var(--text);font-family:inherit;font-size:14px;outline:none;-webkit-appearance:none;appearance:none}
 select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23a8927f' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
 .time-wrap{display:flex;gap:6px;align-items:center}
 .time-sel{flex:1;padding:10px 8px;border:.5px solid var(--border2);border-radius:var(--rs);background:var(--bg);color:var(--text);font-family:inherit;font-size:14px;outline:none;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23a8927f' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;padding-right:24px}
@@ -141,14 +141,16 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .nav-btn{background:none;border:.5px solid var(--border2);border-radius:6px;width:28px;height:28px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);font-size:15px;font-family:inherit}
 .nav-btn:active{background:var(--bg2)}
 .nav-btn:disabled{opacity:.3;cursor:default}
-.nav-label{font-size:13px;font-weight:600;color:var(--accent);min-width:110px;text-align:center}
+.nav-label{font-size:13px;font-weight:600;color:var(--accent);min-width:0;flex:1;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .view-toggle{display:flex;border:.5px solid var(--border2);border-radius:7px;overflow:hidden}
-.vt-btn{padding:5px 9px;background:none;border:none;font-size:12px;cursor:pointer;font-family:inherit;color:var(--text3)}
+.vt-btn{padding:5px 10px;background:none;border:none;font-size:12px;cursor:pointer;font-family:inherit;color:var(--text3)}
 .vt-btn.active{background:var(--accent);color:#fff}
 .chart-type-toggle{display:flex;border:.5px solid var(--border2);border-radius:7px;overflow:hidden}
-.ct-btn{padding:5px 9px;background:none;border:none;font-size:12px;cursor:pointer;font-family:inherit;color:var(--text3)}
+.ct-btn{padding:5px 10px;background:none;border:none;font-size:12px;cursor:pointer;font-family:inherit;color:var(--text3)}
 .ct-btn.active{background:var(--accent);color:#fff}
-.chart-controls-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.chart-controls-row{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.chart-controls-top{display:flex;align-items:center;gap:4px;width:100%}
+.chart-controls-bottom{display:flex;gap:6px;justify-content:flex-end}
 .chart-wrap{position:relative;height:190px;margin-bottom:6px}
 canvas#chart{width:100%!important;height:190px!important}
 .chart-meta{font-size:12px;color:var(--text3);text-align:center;margin-bottom:4px}
@@ -262,24 +264,24 @@ canvas#chart{width:100%!important;height:190px!important}
           <option value="other">Other</option>
         </select>
       </div>
-      <div class="form-row">
-        <div style="flex:1"><span class="form-label">Date</span>
-          <select id="evt-date-y" style="width:100%;flex:unset;margin-bottom:4px"></select>
-          <div style="display:flex;gap:4px">
-            <select id="evt-date-m" style="flex:1;width:auto"></select>
-            <select id="evt-date-d" style="flex:1;width:auto"></select>
-          </div>
+      <div style="margin-bottom:8px">
+        <span class="form-label">Date</span>
+        <div style="display:flex;gap:6px">
+          <select id="evt-date-y" style="flex:2;min-width:0;padding:10px 8px;border:.5px solid var(--border2);border-radius:var(--rs);background:var(--bg);color:var(--text);font-family:inherit;font-size:14px;outline:none;-webkit-appearance:none;appearance:none"></select>
+          <select id="evt-date-m" style="flex:2;min-width:0;padding:10px 8px;border:.5px solid var(--border2);border-radius:var(--rs);background:var(--bg);color:var(--text);font-family:inherit;font-size:14px;outline:none;-webkit-appearance:none;appearance:none"></select>
+          <select id="evt-date-d" style="flex:1;min-width:0;padding:10px 6px;border:.5px solid var(--border2);border-radius:var(--rs);background:var(--bg);color:var(--text);font-family:inherit;font-size:14px;outline:none;-webkit-appearance:none;appearance:none"></select>
         </div>
-        <div style="flex:1"><span class="form-label">Time</span>
-          <div class="time-wrap">
-            <select id="evt-hr" class="time-sel"></select>
-            <span style="color:var(--text3);font-size:14px">:</span>
-            <select id="evt-min" class="time-sel"></select>
-            <select id="evt-ampm" class="time-sel" style="min-width:52px">
-              <option value="AM">AM</option>
-              <option value="PM">PM</option>
-            </select>
-          </div>
+      </div>
+      <div style="margin-bottom:8px">
+        <span class="form-label">Time</span>
+        <div style="display:flex;gap:6px;align-items:center">
+          <select id="evt-hr" style="flex:1;min-width:0;padding:10px 6px;border:.5px solid var(--border2);border-radius:var(--rs);background:var(--bg);color:var(--text);font-family:inherit;font-size:14px;outline:none;-webkit-appearance:none;appearance:none"></select>
+          <span style="color:var(--text3);font-size:16px;flex-shrink:0">:</span>
+          <select id="evt-min" style="flex:1;min-width:0;padding:10px 6px;border:.5px solid var(--border2);border-radius:var(--rs);background:var(--bg);color:var(--text);font-family:inherit;font-size:14px;outline:none;-webkit-appearance:none;appearance:none"></select>
+          <select id="evt-ampm" style="flex:1;min-width:0;padding:10px 6px;border:.5px solid var(--border2);border-radius:var(--rs);background:var(--bg);color:var(--text);font-family:inherit;font-size:14px;outline:none;-webkit-appearance:none;appearance:none">
+            <option value="AM">AM</option>
+            <option value="PM">PM</option>
+          </select>
         </div>
       </div>
       <div class="form-row">
@@ -326,12 +328,12 @@ canvas#chart{width:100%!important;height:190px!important}
     <div class="card">
       <div class="slabel">Calorie History</div>
       <div class="chart-controls-row">
-        <div class="chart-nav-left">
+        <div class="chart-controls-top">
           <button class="nav-btn" id="btn-prev" onclick="chartNav(-1)">‹</button>
           <span class="nav-label" id="nav-label">—</span>
           <button class="nav-btn" id="btn-next" onclick="chartNav(1)">›</button>
         </div>
-        <div style="display:flex;gap:6px;align-items:center">
+        <div class="chart-controls-bottom">
           <div class="view-toggle">
             <button class="vt-btn active" id="vt-month" onclick="setView('month')">Month</button>
             <button class="vt-btn" id="vt-week" onclick="setView('week')">Week</button>
