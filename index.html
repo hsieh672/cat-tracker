@@ -56,39 +56,66 @@ body{display:flex;flex-direction:column;max-width:520px;margin:0 auto;width:100%
 .goal-row label{font-size:14px;color:var(--text2)}
 .goal-input{width:84px;text-align:right;border:.5px solid var(--border2);border-radius:8px;padding:7px 10px;font-size:15px;font-weight:600;background:var(--bg2);color:var(--accent);font-family:inherit}
 
-/* Food log */
-.food-entry{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:.5px solid var(--border)}
-.food-entry:last-child{border-bottom:none}
-.fe-name{flex:2;font-size:14px;font-weight:500;color:var(--text)}
-.fe-detail{font-size:12px;color:var(--text3);margin-top:1px}
-.fe-kcal{font-size:14px;font-weight:600;color:var(--accent);white-space:nowrap}
-.fe-del{background:none;border:none;color:var(--text3);font-size:14px;cursor:pointer;padding:2px 4px}
+/* Food category rows */
+.food-cat-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:.5px solid var(--border);cursor:pointer}
+.food-cat-row:last-child{border-bottom:none}
+.fcat-left{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+.fcat-icon{font-size:20px;width:32px;text-align:center;flex-shrink:0}
+.fcat-info{flex:1;min-width:0}
+.fcat-name{font-size:15px;font-weight:600;color:var(--text)}
+.fcat-sub{font-size:12px;color:var(--text3);margin-top:1px}
+.fcat-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.fcat-kcal{font-size:14px;font-weight:700;color:var(--accent)}
+.fcat-del{background:none;border:none;color:var(--text3);font-size:14px;cursor:pointer;padding:4px 6px}
+.fcat-edit-hint{font-size:11px;color:var(--text3);padding:3px 8px;border:.5px solid var(--border);border-radius:99px}
 
-/* Add food form */
-.add-food-form{background:var(--bg2);border-radius:var(--rs);padding:12px;margin-top:8px}
-.add-food-form .form-row{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap}
-.add-food-form .form-row:last-child{margin-bottom:0}
-.aff-input{flex:1;min-width:0;padding:9px 10px;border:.5px solid var(--border2);border-radius:8px;background:var(--bg);color:var(--text);font-family:inherit;font-size:14px;outline:none}
-.aff-input::placeholder{color:var(--text3)}
-.aff-label{font-size:10px;color:var(--text3);display:block;margin-bottom:3px;text-transform:uppercase;letter-spacing:.05em}
-.aff-field{flex:1}
-.add-confirm-btn{flex:1;padding:9px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
-.add-confirm-btn:active{opacity:.85}
-.toggle-add-btn{width:100%;margin-top:8px;padding:9px;background:none;border:.5px dashed var(--border2);border-radius:var(--rs);color:var(--text2);font-size:14px;cursor:pointer;font-family:inherit}
-.toggle-add-btn:active{background:var(--bg2)}
+/* Category picker grid */
+.cat-picker{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.cat-pick-btn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 6px;background:var(--bg2);border:.5px solid var(--border);border-radius:var(--rs);cursor:pointer;font-family:inherit;transition:all .12s}
+.cat-pick-btn:active,.cat-pick-btn.selected{background:var(--bg3);border-color:var(--border2)}
+.cat-pick-icon{font-size:22px}
+.cat-pick-label{font-size:12px;font-weight:500;color:var(--text2)}
 
-/* Grouped food summary */
-.food-group{padding:10px 0;border-bottom:.5px solid var(--border)}
-.food-group:last-child{border-bottom:none}
-.fg-header{display:flex;align-items:center;justify-content:space-between;cursor:pointer}
-.fg-name{font-size:15px;font-weight:600;color:var(--text)}
-.fg-total{font-size:14px;font-weight:700;color:var(--accent)}
-.fg-entries{margin-top:6px;padding-left:8px}
-.fg-entry{display:flex;align-items:center;justify-content:space-between;padding:4px 0;font-size:13px}
-.fg-entry-info{color:var(--text2)}
-.fg-entry-kcal{color:var(--text3);font-weight:500}
-.fg-entry-del{background:none;border:none;color:var(--text3);font-size:12px;cursor:pointer;padding:2px 4px;margin-left:4px}
-.fg-count{font-size:11px;color:var(--text3);margin-left:6px;font-weight:400}
+/* Slider bottom sheet → replaced by drum roller */
+.smodal-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;z-index:200}
+.smodal{background:var(--bg);border-radius:22px 22px 0 0;padding:20px 20px calc(16px + var(--safe));width:100%;max-width:520px;margin:0 auto}
+.smodal-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px}
+.smodal-title{font-size:17px;font-weight:700;color:var(--accent)}
+.smodal-cat{font-size:12px;color:var(--text3);margin-bottom:14px}
+.smodal-close{background:none;border:none;font-size:18px;color:var(--text3);cursor:pointer;padding:0 4px;line-height:1}
+
+/* Drum roller */
+.pickers-row{display:flex;gap:8px;margin-bottom:14px;align-items:flex-start}
+.picker-col{display:flex;flex-direction:column;align-items:stretch;gap:6px;min-width:0}
+.picker-col-label{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;text-align:center}
+.drum{position:relative;height:144px;overflow:hidden;border-radius:12px;background:var(--bg2);border:.5px solid var(--border);touch-action:none;user-select:none;cursor:grab;min-width:48px}
+.drum:active{cursor:grabbing}
+.drum-track{position:absolute;left:0;right:0;top:48px;transition:transform .08s linear}
+.drum-item{height:48px;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:500;color:var(--text3);transition:color .1s,font-size .1s;white-space:nowrap}
+.drum-item.center{color:var(--accent);font-size:20px;font-weight:700}
+.drum-overlay{position:absolute;inset:0;pointer-events:none;z-index:2}
+.drum-overlay::before,.drum-overlay::after{content:'';position:absolute;left:0;right:0;height:48px}
+.drum-overlay::before{top:0;background:linear-gradient(to bottom,var(--bg2) 20%,transparent)}
+.drum-overlay::after{bottom:0;background:linear-gradient(to top,var(--bg2) 20%,transparent)}
+.drum-sel-line{position:absolute;left:6px;right:6px;top:48px;height:48px;border-top:.5px solid var(--border2);border-bottom:.5px solid var(--border2);pointer-events:none;z-index:1;border-radius:6px}
+.drum-dot{font-size:24px;font-weight:700;color:var(--accent);align-self:center;padding:0 2px;margin-top:20px;flex-shrink:0}
+
+/* Food memory list */
+.food-mem-list{margin-bottom:12px}
+.food-mem-item{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:var(--rs);cursor:pointer;transition:background .1s}
+.food-mem-item:hover,.food-mem-item:active{background:var(--bg2)}
+.food-mem-name{font-size:14px;font-weight:500;color:var(--text)}
+.food-mem-kcal{font-size:12px;color:var(--text3)}
+.food-mem-del{background:none;border:none;color:var(--text3);font-size:13px;cursor:pointer;padding:2px 6px}
+
+.kcal-preview{background:var(--bg2);border-radius:var(--rs);padding:10px 14px;display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.kcal-preview-lbl{font-size:13px;color:var(--text2)}
+.kcal-preview-val{font-size:18px;font-weight:700;color:var(--accent)}
+.smodal-btns{display:flex;gap:8px}
+.smodal-cancel{flex:1;padding:13px;background:var(--bg2);border:.5px solid var(--border2);border-radius:var(--rs);font-size:15px;font-weight:500;cursor:pointer;font-family:inherit;color:var(--text2)}
+.smodal-save{flex:2;padding:13px;background:var(--accent);color:#fff;border:none;border-radius:var(--rs);font-size:15px;font-weight:600;cursor:pointer;font-family:inherit}
+.smodal-save:active{opacity:.85}
+.mem-section-label{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
 
 /* Total */
 .total-sec{padding-top:14px;border-top:.5px solid var(--border);margin-top:4px}
@@ -218,27 +245,10 @@ canvas#chart{width:100%!important;height:190px!important}
     <div class="card">
       <div class="slabel">Today's Food</div>
       <div id="food-list"></div>
-      <div id="add-food-form" class="add-food-form hidden">
-        <div class="form-row">
-          <div class="aff-field">
-            <span class="aff-label">Food name</span>
-            <input class="aff-input" type="text" id="new-food-name" placeholder="e.g. Wet food" list="food-suggestions">
-            <datalist id="food-suggestions"></datalist>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="aff-field">
-            <span class="aff-label">Amount (g)</span>
-            <input class="aff-input" type="number" id="new-food-grams" placeholder="80" min="0" inputmode="decimal">
-          </div>
-          <div class="aff-field">
-            <span class="aff-label">kcal / 100g</span>
-            <input class="aff-input" type="number" id="new-food-kcal" placeholder="90" min="0" inputmode="decimal">
-          </div>
-          <button class="add-confirm-btn" onclick="confirmAddFood()">Add</button>
-        </div>
+      <div style="margin-top:10px;border-top:.5px solid var(--border);padding-top:12px">
+        <div class="slabel" style="margin-bottom:10px">Add food</div>
+        <div class="cat-picker" id="cat-picker"></div>
       </div>
-      <button class="toggle-add-btn" id="toggle-add-btn" onclick="toggleAddForm()">+ Add food</button>
       <div class="total-sec">
         <div class="total-row">
           <span class="total-lbl">Today's total</span>
@@ -363,6 +373,71 @@ canvas#chart{width:100%!important;height:190px!important}
 
 </div>
 
+<!-- Food entry modal with drum roller -->
+<div class="smodal-bg hidden" id="smodal" onclick="if(event.target===this)closeSmodal()">
+  <div class="smodal">
+    <div class="smodal-head">
+      <div>
+        <div class="smodal-title" id="smodal-title">Wet Food</div>
+      </div>
+      <button class="smodal-close" onclick="closeSmodal()">✕</button>
+    </div>
+    <div class="smodal-cat" id="smodal-mode-label">New entry</div>
+
+    <!-- Custom name input (Other only) -->
+    <div id="custom-name-wrap" class="hidden" style="margin-bottom:14px">
+      <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px">Food name</div>
+      <input type="text" id="custom-name-input" placeholder="e.g. Bone broth, Kefir…"
+        style="width:100%;padding:10px 12px;border:.5px solid var(--border2);border-radius:var(--rs);background:var(--bg2);color:var(--text);font-family:inherit;font-size:15px;outline:none">
+    </div>
+
+    <!-- Memory list -->
+    <div id="mem-section" class="hidden">
+      <div class="mem-section-label">Recent — tap to use</div>
+      <div class="food-mem-list" id="food-mem-list"></div>
+    </div>
+
+    <!-- Drum pickers -->
+    <div class="pickers-row">
+      <!-- Integer part -->
+      <div class="picker-col" style="flex:5">
+        <div class="picker-col-label">Amount (g)</div>
+        <div style="display:flex;align-items:flex-start;gap:4px">
+          <div class="drum" id="drum-gi" style="flex:3">
+            <div class="drum-sel-line"></div>
+            <div class="drum-overlay"></div>
+            <div class="drum-track" id="track-gi"></div>
+          </div>
+          <div class="drum-dot">.</div>
+          <div class="drum" id="drum-gd" style="flex:2">
+            <div class="drum-sel-line"></div>
+            <div class="drum-overlay"></div>
+            <div class="drum-track" id="track-gd"></div>
+          </div>
+        </div>
+      </div>
+      <!-- kcal -->
+      <div class="picker-col" style="flex:4">
+        <div class="picker-col-label">kcal / 100g</div>
+        <div class="drum" id="drum-k">
+          <div class="drum-sel-line"></div>
+          <div class="drum-overlay"></div>
+          <div class="drum-track" id="track-k"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="kcal-preview">
+      <span class="kcal-preview-lbl">This serving</span>
+      <span class="kcal-preview-val" id="sl-kcal-preview">— kcal</span>
+    </div>
+    <div class="smodal-btns">
+      <button class="smodal-cancel" onclick="closeSmodal()">Cancel</button>
+      <button class="smodal-save" id="smodal-save-btn" onclick="saveSmodal()">Add</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-bg hidden" id="name-modal" onclick="if(event.target===this)closeNameModal()">
   <div class="modal">
     <h3>Cat's name</h3>
@@ -399,17 +474,24 @@ function saveData(){
   localStorage.setItem('cat-v4',JSON.stringify(d));
 }
 
+// ── Drum roller ───────────────────────────────
+// gram integer: 0–100, gram decimal: 0–9, kcal: 0–500
+const GRAM_INT_OPTS=[];for(let i=0;i<=100;i++)GRAM_INT_OPTS.push(i);
+const GRAM_DEC_OPTS=[0,1,2,3,4,5,6,7,8,9];
+const KCAL_OPTS=[];for(let i=0;i<=500;i++)KCAL_OPTS.push(i);
+const ITEM_H=48;
+let drumGI={opts:GRAM_INT_OPTS,idx:0,el:null,track:null,startY:0,startIdx:0,dragging:false};
+let drumGD={opts:GRAM_DEC_OPTS,idx:0,el:null,track:null,startY:0,startIdx:0,dragging:false};
+let drumK={opts:KCAL_OPTS,idx:0,el:null,track:null,startY:0,startIdx:0,dragging:false};
+
 const NOW=new Date();
 const TODAY=NOW.toISOString().split('T')[0];
 let data=loadData();
-// foodEntries: array of {id, name, grams, kcalPer100}
-let foodEntries=data.foodEntries||[
-  {id:'1',name:'Wet food',grams:80,kcalPer100:90},
-  {id:'2',name:'Dry kibble',grams:30,kcalPer100:350}
-];
+let foodEntries=data.foodEntries||[];
 let events=data.events||[];
 let avatarUrl=data.avatar||null;
 let dailyLog=data.dailyLog||{};
+let foodMemory=data.foodMemory||[];
 
 // chart state
 let chartType='bar';
@@ -418,7 +500,6 @@ let chartMonthOffset=0;
 let chartWeekOffset=0;
 let drillWeek=null; // {year,month,weekIdx} when drilling into a week
 let chartInstance=null;
-let addFormOpen=false;
 
 // init UI
 if(data.catName) document.getElementById('cat-name').textContent=data.catName;
@@ -504,77 +585,218 @@ function switchTab(t){
   if(t==='overview') renderOverview();
 }
 
-// ── Calories ─────────────────────────────────
-function calcTotal(){
-  return Math.round(foodEntries.reduce((s,f)=>s+(f.grams*f.kcalPer100/100),0));
+// ── Food categories ───────────────────────────
+const FOOD_CATS=[
+  {key:'raw',   label:'Raw Meat', icon:'🥩', defaultKcal:130, defaultG:50},
+  {key:'dry',   label:'Dry Food', icon:'🌾', defaultKcal:350, defaultG:30},
+  {key:'wet',   label:'Wet Food', icon:'🥣', defaultKcal:90,  defaultG:80},
+  {key:'treat', label:'Treats',   icon:'🍤', defaultKcal:300, defaultG:5},
+  {key:'other', label:'Other',    icon:'🫙', defaultKcal:100, defaultG:30, customName:true},
+];
+function catByKey(k){return FOOD_CATS.find(c=>c.key===k)||FOOD_CATS[4]}
+
+function renderCatPicker(){
+  document.getElementById('cat-picker').innerHTML=FOOD_CATS.map(c=>`
+    <button class="cat-pick-btn" onclick="openSmodal('${c.key}')">
+      <span class="cat-pick-icon">${c.icon}</span>
+      <span class="cat-pick-label">${c.label}</span>
+    </button>`).join('');
 }
 
-function renderFoods(){
-  // Group by name
-  const groups={};
-  foodEntries.forEach(f=>{
-    const key=f.name.trim().toLowerCase()||'unnamed';
-    if(!groups[key]) groups[key]={name:f.name,entries:[]};
-    groups[key].entries.push(f);
+// ── Drum roller functions ─────────────────────
+function buildDrum(drum,trackId){
+  drum.track=document.getElementById(trackId);
+  drum.track.innerHTML=drum.opts.map((v,i)=>`<div class="drum-item" data-i="${i}">${v}</div>`).join('');
+  setDrumIdx(drum,drum.idx,false);
+}
+
+function setDrumIdx(drum,idx,animate){
+  idx=Math.max(0,Math.min(drum.opts.length-1,idx));
+  drum.idx=idx;
+  // track starts at top:48px (= center of first item)
+  // to center item[idx], shift up by idx*ITEM_H
+  const offset=-(idx)*ITEM_H;
+  drum.track.style.transition=animate?'transform .18s cubic-bezier(.25,.8,.25,1)':'none';
+  drum.track.style.transform=`translateY(${offset}px)`;
+  drum.track.querySelectorAll('.drum-item').forEach((el,i)=>{
+    el.classList.toggle('center',i===idx);
   });
+  updateKcalPreview();
+}
 
-  const el=document.getElementById('food-list');
-  if(!foodEntries.length){el.innerHTML='<div class="empty-msg" style="padding:1rem 0">No food logged yet</div>';updateCalc();return}
+function attachDrumEvents(drum,drumEl){
+  drum.el=drumEl;
+  const onStart=e=>{
+    drum.dragging=true;
+    drum.startY=(e.touches?e.touches[0].clientY:e.clientY);
+    drum.startIdx=drum.idx;
+    drum.track.style.transition='none';
+  };
+  const onMove=e=>{
+    if(!drum.dragging)return;
+    e.preventDefault();
+    const y=(e.touches?e.touches[0].clientY:e.clientY);
+    const delta=drum.startY-y;
+    const idxDelta=Math.round(delta/ITEM_H);
+    const newIdx=Math.max(0,Math.min(drum.opts.length-1,drum.startIdx+idxDelta));
+    if(newIdx!==drum.idx) setDrumIdx(drum,newIdx,false);
+  };
+  const onEnd=()=>{drum.dragging=false};
+  drumEl.addEventListener('touchstart',onStart,{passive:true});
+  drumEl.addEventListener('touchmove',onMove,{passive:false});
+  drumEl.addEventListener('touchend',onEnd);
+  drumEl.addEventListener('mousedown',onStart);
+  window.addEventListener('mousemove',onMove);
+  window.addEventListener('mouseup',onEnd);
+  // wheel scroll
+  drumEl.addEventListener('wheel',e=>{
+    e.preventDefault();
+    const delta=e.deltaY>0?1:-1;
+    setDrumIdx(drum,drum.idx+delta,true);
+  },{passive:false});
+}
 
-  el.innerHTML=Object.values(groups).map(g=>{
-    const groupTotal=Math.round(g.entries.reduce((s,f)=>s+(f.grams*f.kcalPer100/100),0));
-    const multi=g.entries.length>1;
-    return`<div class="food-group">
-      <div class="fg-header">
-        <span class="fg-name">${g.name||'Unnamed'}<span class="fg-count">${multi?`×${g.entries.length}`:''}</span></span>
-        <span class="fg-total">${groupTotal} kcal</span>
+function getGrams(){
+  return parseFloat((GRAM_INT_OPTS[drumGI.idx]+(GRAM_DEC_OPTS[drumGD.idx]/10)).toFixed(1));
+}
+function updateKcalPreview(){
+  const g=getGrams();
+  const k=KCAL_OPTS[drumK.idx]||0;
+  document.getElementById('sl-kcal-preview').textContent=(g*k/100).toFixed(1)+' kcal';
+}
+
+// ── Food memory ───────────────────────────────
+// foodMemory: [{catKey, name, grams, kcalPer100, usedAt}]
+
+function saveMemory(catKey,grams,kcalPer100,name){
+  const cat=catByKey(catKey);
+  const displayName=name||cat.label;
+  foodMemory=foodMemory.filter(m=>!(m.catKey===catKey&&m.kcalPer100===kcalPer100&&m.grams===grams));
+  foodMemory.unshift({catKey,name:displayName,grams,kcalPer100,usedAt:Date.now()});
+  if(foodMemory.length>20) foodMemory=foodMemory.slice(0,20);
+  const d=loadData();d.foodMemory=foodMemory;localStorage.setItem('cat-v4',JSON.stringify(d));
+}
+
+function renderMemory(catKey){
+  const matches=foodMemory.filter(m=>m.catKey===catKey).slice(0,4);
+  const sec=document.getElementById('mem-section');
+  const list=document.getElementById('food-mem-list');
+  if(!matches.length){sec.classList.add('hidden');return}
+  sec.classList.remove('hidden');
+  list.innerHTML=matches.map((m,i)=>`
+    <div class="food-mem-item" onclick="applyMemory(${foodMemory.indexOf(m)})">
+      <div>
+        <div class="food-mem-name">${m.name} · ${m.grams}g · ${m.kcalPer100} kcal/100g</div>
       </div>
-      <div class="fg-entries">
-        ${g.entries.map(f=>{
-          const kcal=Math.round(f.grams*f.kcalPer100/100);
-          return`<div class="fg-entry">
-            <span class="fg-entry-info">${f.grams}g · ${f.kcalPer100} kcal/100g</span>
-            <span style="display:flex;align-items:center;gap:0">
-              <span class="fg-entry-kcal">${kcal} kcal</span>
-              <button class="fg-entry-del" onclick="removeFoodEntry('${f.id}')">✕</button>
-            </span>
-          </div>`;
-        }).join('')}
+      <div style="display:flex;align-items:center;gap:6px">
+        <span class="food-mem-kcal">${Math.round(m.grams*m.kcalPer100/100)} kcal</span>
+        <button class="food-mem-del" onclick="event.stopPropagation();deleteMemory(${foodMemory.indexOf(m)})">✕</button>
+      </div>
+    </div>`).join('');
+}
+
+function applyMemory(idx){
+  const m=foodMemory[idx];
+  if(!m)return;
+  setGrams(m.grams);
+  setDrumIdx(drumK,kcalIdx(m.kcalPer100),true);
+}
+
+function deleteMemory(idx){
+  foodMemory.splice(idx,1);
+  const d=loadData();d.foodMemory=foodMemory;localStorage.setItem('cat-v4',JSON.stringify(d));
+  renderMemory(smodalCat);
+}
+
+// ── Smodal open/close ─────────────────────────
+let smodalCat=null;
+
+function setGrams(g){
+  const intPart=Math.min(100,Math.floor(g));
+  const decPart=Math.round((g-intPart)*10);
+  setDrumIdx(drumGI,intPart,false);
+  setDrumIdx(drumGD,Math.min(9,decPart),false);
+}
+function kcalIdx(k){
+  return Math.max(0,Math.min(KCAL_OPTS.length-1,Math.round(k)));
+}
+
+function openSmodal(catKey){
+  const cat=catByKey(catKey);
+  smodalCat=catKey;
+  const existing=foodEntries.find(f=>f.catKey===catKey);
+
+  document.getElementById('smodal-title').textContent=cat.icon+' '+cat.label;
+  document.getElementById('smodal-mode-label').textContent=existing?'Tap memory or scroll to edit':'Tap memory or scroll to set amount';
+  document.getElementById('smodal-save-btn').textContent=existing?'Save':'Add';
+
+  // show custom name field only for 'other'
+  const nameWrap=document.getElementById('custom-name-wrap');
+  const nameInput=document.getElementById('custom-name-input');
+  if(cat.customName){
+    nameWrap.classList.remove('hidden');
+    nameInput.value=existing?existing.name:'';
+  } else {
+    nameWrap.classList.add('hidden');
+    nameInput.value='';
+  }
+
+  const g=existing?existing.grams:cat.defaultG;
+  const k=existing?existing.kcalPer100:cat.defaultKcal;
+  setGrams(g);
+  setDrumIdx(drumK,kcalIdx(k),false);
+
+  renderMemory(catKey);
+  document.getElementById('smodal').classList.remove('hidden');
+}
+
+function closeSmodal(){document.getElementById('smodal').classList.add('hidden')}
+
+function saveSmodal(){
+  const cat=catByKey(smodalCat);
+  const grams=getGrams();
+  const kcalPer100=KCAL_OPTS[drumK.idx];
+  const customInput=document.getElementById('custom-name-input').value.trim();
+  const name=cat.customName&&customInput?customInput:cat.label;
+  const idx=foodEntries.findIndex(f=>f.catKey===smodalCat);
+  if(idx>=0){foodEntries[idx].grams=grams;foodEntries[idx].kcalPer100=kcalPer100;foodEntries[idx].name=name;}
+  else{foodEntries.push({id:Date.now()+'',catKey:smodalCat,name,grams,kcalPer100});}
+  saveMemory(smodalCat,grams,kcalPer100,name);
+  closeSmodal();saveData();renderFoods();
+}
+
+// ── Render food list ──────────────────────────
+function calcTotal(){return Math.round(foodEntries.reduce((s,f)=>s+(f.grams*f.kcalPer100/100),0))}
+
+function renderFoods(){
+  renderCatPicker();
+  const el=document.getElementById('food-list');
+  if(!foodEntries.length){
+    el.innerHTML='<div class="empty-msg" style="padding:.75rem 0 1rem">No food logged yet — tap a category below</div>';
+    updateCalc();return;
+  }
+  el.innerHTML=foodEntries.map(f=>{
+    const cat=catByKey(f.catKey||'other');
+    const kcal=Math.round(f.grams*f.kcalPer100/100);
+    return`<div class="food-cat-row" onclick="openSmodal('${f.catKey||'other'}')">
+      <div class="fcat-left">
+        <span class="fcat-icon">${cat.icon}</span>
+        <div class="fcat-info">
+          <div class="fcat-name">${cat.label}</div>
+          <div class="fcat-sub">${f.grams}g · ${f.kcalPer100} kcal/100g</div>
+        </div>
+      </div>
+      <div class="fcat-right">
+        <span class="fcat-kcal">${kcal} kcal</span>
+        <span class="fcat-edit-hint">Edit</span>
+        <button class="fcat-del" onclick="event.stopPropagation();removeFoodEntry('${f.id}')">✕</button>
       </div>
     </div>`;
   }).join('');
-
-  // update datalist suggestions
-  const names=[...new Set(foodEntries.map(f=>f.name).filter(Boolean))];
-  document.getElementById('food-suggestions').innerHTML=names.map(n=>`<option value="${n}">`).join('');
-
   updateCalc();
 }
 
-function removeFoodEntry(id){
-  foodEntries=foodEntries.filter(f=>f.id!==id);
-  saveData();renderFoods();
-}
-
-function toggleAddForm(){
-  addFormOpen=!addFormOpen;
-  document.getElementById('add-food-form').classList.toggle('hidden',!addFormOpen);
-  document.getElementById('toggle-add-btn').textContent=addFormOpen?'✕ Cancel':'+ Add food';
-  if(addFormOpen) document.getElementById('new-food-name').focus();
-}
-
-function confirmAddFood(){
-  const name=document.getElementById('new-food-name').value.trim();
-  const grams=+document.getElementById('new-food-grams').value;
-  const kcalPer100=+document.getElementById('new-food-kcal').value;
-  if(!name||!grams||!kcalPer100){alert('Please fill in all fields.');return}
-  foodEntries.push({id:Date.now()+'',name,grams,kcalPer100});
-  document.getElementById('new-food-name').value='';
-  document.getElementById('new-food-grams').value='';
-  document.getElementById('new-food-kcal').value='';
-  // keep form open for more entries, but auto-fill name if matching existing
-  saveData();renderFoods();
-}
+function removeFoodEntry(id){foodEntries=foodEntries.filter(f=>f.id!==id);saveData();renderFoods()}
 
 function updateCalc(){
   const total=calcTotal();
@@ -588,7 +810,6 @@ function updateCalc(){
   const rem=goal-total;
   document.getElementById('prog-left').textContent=over?`${Math.abs(rem)} kcal over goal`:`${rem} kcal remaining`;
   document.getElementById('prog-pct').textContent=pct+'%';
-  // persist
   const d=loadData();if(!d.dailyLog)d.dailyLog={};
   d.dailyLog[TODAY]=total;dailyLog=d.dailyLog;
   localStorage.setItem('cat-v4',JSON.stringify(d));
@@ -903,6 +1124,12 @@ function saveName(){
 
 // ── Init ──────────────────────────────────────
 function save(){saveData()}
+buildDrum(drumGI,'track-gi');
+buildDrum(drumGD,'track-gd');
+buildDrum(drumK,'track-k');
+attachDrumEvents(drumGI,document.getElementById('drum-gi'));
+attachDrumEvents(drumGD,document.getElementById('drum-gd'));
+attachDrumEvents(drumK,document.getElementById('drum-k'));
 renderFoods();
 renderEvents();
 </script>
