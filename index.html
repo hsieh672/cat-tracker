@@ -626,22 +626,45 @@ function setDrumIdx(drum,idx,animate){
 
 function attachDrumEvents(drum,drumEl){
   drum.el=drumEl;
+  let lastY=0, lastT=0, velocity=0, rafId=null;
+
   const onStart=e=>{
     drum.dragging=true;
-    drum.startY=(e.touches?e.touches[0].clientY:e.clientY);
+    const y=e.touches?e.touches[0].clientY:e.clientY;
+    drum.startY=y; lastY=y; lastT=Date.now();
     drum.startIdx=drum.idx;
+    velocity=0;
+    if(rafId){cancelAnimationFrame(rafId);rafId=null;}
     drum.track.style.transition='none';
   };
   const onMove=e=>{
     if(!drum.dragging)return;
     e.preventDefault();
-    const y=(e.touches?e.touches[0].clientY:e.clientY);
+    const y=e.touches?e.touches[0].clientY:e.clientY;
+    const now=Date.now();
+    const dt=Math.max(1,now-lastT);
+    velocity=(lastY-y)/dt; // px/ms
+    lastY=y; lastT=now;
     const delta=drum.startY-y;
-    const idxDelta=Math.round(delta/16); // 16px per step (was 48)
+    const idxDelta=Math.round(delta/16);
     const newIdx=Math.max(0,Math.min(drum.opts.length-1,drum.startIdx+idxDelta));
     if(newIdx!==drum.idx) setDrumIdx(drum,newIdx,false);
   };
-  const onEnd=()=>{drum.dragging=false};
+  const onEnd=()=>{
+    if(!drum.dragging)return;
+    drum.dragging=false;
+    // inertia: keep scrolling based on release velocity
+    let v=velocity*18; // amplify
+    const coast=()=>{
+      if(Math.abs(v)<0.3)return;
+      const newIdx=Math.max(0,Math.min(drum.opts.length-1,Math.round(drum.idx+v)));
+      setDrumIdx(drum,newIdx,false);
+      v*=0.82; // friction
+      rafId=requestAnimationFrame(coast);
+    };
+    rafId=requestAnimationFrame(coast);
+  };
+
   drumEl.addEventListener('touchstart',onStart,{passive:true});
   drumEl.addEventListener('touchmove',onMove,{passive:false});
   drumEl.addEventListener('touchend',onEnd);
