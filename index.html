@@ -8,7 +8,9 @@
 <meta name="apple-mobile-web-app-title" content="Cat Health">
 <meta name="theme-color" content="#ffffff">
 <title>Cat Health Tracker</title>
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='36' fill='%233b2314'/%3E%3Cellipse cx='90' cy='108' rx='34' ry='27' fill='white'/%3E%3Cellipse cx='57' cy='83' rx='13' ry='17' fill='white'/%3E%3Cellipse cx='123' cy='83' rx='13' ry='17' fill='white'/%3E%3Cellipse cx='74' cy='60' rx='10' ry='13' fill='white'/%3E%3Cellipse cx='106' cy='60' rx='10' ry='13' fill='white'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#fff;--bg2:#f7f4f1;--bg3:#ede8e2;
@@ -24,7 +26,7 @@
   --r:14px;--rs:9px;--safe:env(safe-area-inset-bottom,0px);
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,'Helvetica Neue',sans-serif;overflow-x:hidden}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Noto Sans TC',-apple-system,'Helvetica Neue',sans-serif;overflow-x:hidden}
 body{display:flex;flex-direction:column;max-width:520px;margin:0 auto;width:100%}
 
 /* Header */
@@ -38,8 +40,9 @@ body{display:flex;flex-direction:column;max-width:520px;margin:0 auto;width:100%
 .av-ov{position:absolute;inset:0;background:rgba(0,0,0,.3);display:none;align-items:center;justify-content:center;color:#fff;font-size:10px;font-weight:600;border-radius:50%}
 .avatar:hover .av-ov{display:flex}
 #av-input{display:none}
-.cat-name{font-size:19px;font-weight:700;letter-spacing:-.3px;color:var(--accent)}
-.edit-btn{background:none;border:.5px solid var(--border2);font-size:12px;color:var(--text3);cursor:pointer;padding:4px 10px;border-radius:99px;font-family:inherit}
+.cat-name{font-size:19px;font-weight:700;letter-spacing:-.3px;color:var(--accent);cursor:pointer;border-bottom:1.5px dotted var(--border2);padding-bottom:1px}
+.cat-name:active{opacity:.7}
+.lang-btn{background:none;border:.5px solid var(--border2);font-size:12px;color:var(--text3);cursor:pointer;padding:4px 10px;border-radius:99px;font-family:inherit;font-weight:600}
 .tabs{display:flex}
 .tab{flex:1;padding:10px 4px;border:none;border-bottom:2px solid transparent;background:transparent;cursor:pointer;font-size:13px;font-weight:500;color:var(--text3);font-family:inherit;transition:all .15s}
 .tab.active{color:var(--accent);border-bottom-color:var(--accent)}
@@ -49,7 +52,7 @@ body{display:flex;flex-direction:column;max-width:520px;margin:0 auto;width:100%
 .panel{display:none;width:100%}.panel.active{display:block}
 .card{background:var(--bg);border:.5px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:12px}
 .card-alt{background:var(--bg2);border:.5px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:12px}
-.slabel{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px}
+.slabel{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px}
 
 /* Goal */
 .goal-row{display:flex;align-items:center;justify-content:space-between}
@@ -87,7 +90,10 @@ body{display:flex;flex-direction:column;max-width:520px;margin:0 auto;width:100%
 /* Drum roller */
 .pickers-row{display:flex;gap:8px;margin-bottom:14px;align-items:flex-start}
 .picker-col{display:flex;flex-direction:column;align-items:stretch;gap:6px;min-width:0}
-.picker-col-label{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;text-align:center}
+.picker-col-label{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;text-align:center}
+.metric-lbl{font-size:10px;color:var(--text3);margin-bottom:5px;text-transform:uppercase;letter-spacing:.06em}
+/* suppress letter-spacing for CJK */
+body.zh .slabel,body.zh .picker-col-label,body.zh .metric-lbl,body.zh .form-label,body.zh .aff-label,body.zh .mem-section-label{letter-spacing:0;text-transform:none}
 .drum{position:relative;height:144px;overflow:hidden;border-radius:12px;background:var(--bg2);border:.5px solid var(--border);touch-action:none;user-select:none;cursor:grab;min-width:48px}
 .drum:active{cursor:grabbing}
 .drum-track{position:absolute;left:0;right:0;top:48px;transition:transform .08s linear}
@@ -159,7 +165,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 /* Overview */
 .metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:12px}
 .metric{background:var(--bg2);border-radius:var(--rs);padding:12px}
-.metric-lbl{font-size:10px;color:var(--text3);margin-bottom:5px;text-transform:uppercase;letter-spacing:.06em}
+.metric-lbl{font-size:10px;color:var(--text3);margin-bottom:5px;letter-spacing:.06em}
 .metric-val{font-size:17px;font-weight:700;color:var(--accent)}
 
 /* Chart */
@@ -220,9 +226,9 @@ canvas#chart{width:100%!important;height:190px!important}
         <img id="av-img" alt="cat">
         <div class="av-ov">Edit</div>
       </div>
-      <span class="cat-name" id="cat-name">My Cat</span>
+      <span class="cat-name" id="cat-name" onclick="openNameModal()">My Cat</span>
     </div>
-    <button class="edit-btn" onclick="openNameModal()">Edit name</button>
+    <button class="lang-btn" onclick="toggleLang()" id="lang-btn">中文</button>
   </div>
   <div class="tabs">
     <button class="tab active" onclick="switchTab('calories')">Calories</button>
@@ -289,8 +295,8 @@ canvas#chart{width:100%!important;height:190px!important}
           <span style="color:var(--text3);font-size:16px;flex-shrink:0">:</span>
           <select id="evt-min" style="flex:1;min-width:0;padding:10px 6px;border:.5px solid var(--border2);border-radius:var(--rs);background:var(--bg);color:var(--text);font-family:inherit;font-size:14px;outline:none;-webkit-appearance:none;appearance:none"></select>
           <select id="evt-ampm" style="flex:1;min-width:0;padding:10px 6px;border:.5px solid var(--border2);border-radius:var(--rs);background:var(--bg);color:var(--text);font-family:inherit;font-size:14px;outline:none;-webkit-appearance:none;appearance:none">
-            <option value="AM">AM</option>
-            <option value="PM">PM</option>
+            <option value="AM" id="opt-am">AM</option>
+            <option value="PM" id="opt-pm">PM</option>
           </select>
         </div>
       </div>
@@ -355,7 +361,7 @@ canvas#chart{width:100%!important;height:190px!important}
         </div>
       </div>
       <div id="breadcrumb" class="breadcrumb hidden">
-        <span class="bc-link" onclick="backToMonth()">← Back to month</span>
+        <span class="bc-link" id="bc-back" onclick="backToMonth()">← Back to month</span>
         <span id="bc-label"></span>
       </div>
       <div class="chart-wrap"><canvas id="chart"></canvas></div>
@@ -432,7 +438,7 @@ canvas#chart{width:100%!important;height:190px!important}
       <span class="kcal-preview-val" id="sl-kcal-preview">— kcal</span>
     </div>
     <div class="smodal-btns">
-      <button class="smodal-cancel" onclick="closeSmodal()">Cancel</button>
+      <button class="smodal-cancel" id="smodal-cancel-btn" onclick="closeSmodal()">Cancel</button>
       <button class="smodal-save" id="smodal-save-btn" onclick="saveSmodal()">Add</button>
     </div>
   </div>
@@ -456,6 +462,9 @@ const TYPE_LABELS={bath:'Bath',vet:'Vet visit',checkup:'Health check',vaccine:'V
 const RECUR_LABELS={none:'',daily:'Daily',weekly:'Weekly',biweekly:'Every 2 weeks',monthly:'Monthly'};
 const MONTHS=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const MONTHS_SHORT=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const MONTHS_SHORT_ZH=['1\u6708','2\u6708','3\u6708','4\u6708','5\u6708','6\u6708','7\u6708','8\u6708','9\u6708','10\u6708','11\u6708','12\u6708'];
+let lang='en';
+function monthsShort(){return lang==='zh'?MONTHS_SHORT_ZH:MONTHS_SHORT;}
 
 // ── Storage ──────────────────────────────────
 function loadData(){try{return JSON.parse(localStorage.getItem('cat-v4')||'{}')}catch{return{}}}
@@ -522,18 +531,21 @@ function setAvatar(src){
 }
 
 // ── Date/Time selectors ───────────────────────
+function rebuildMonthSelect(){
+  const mEl=document.getElementById('evt-date-m');
+  const prev=mEl.value;
+  mEl.innerHTML='';
+  monthsShort().forEach((m,i)=>{const o=document.createElement('option');o.value=String(i+1).padStart(2,'0');o.textContent=m;mEl.appendChild(o)});
+  mEl.value=prev||String(NOW.getMonth()+1).padStart(2,'0');
+}
 function initDateSelectors(){
   const yEl=document.getElementById('evt-date-y');
   const cy=NOW.getFullYear();
   for(let y=cy;y>=cy-3;y--){const o=document.createElement('option');o.value=y;o.textContent=y;yEl.appendChild(o)}
   yEl.value=cy;
   yEl.addEventListener('change',updateDayOptions);
-
-  const mEl=document.getElementById('evt-date-m');
-  MONTHS_SHORT.forEach((m,i)=>{const o=document.createElement('option');o.value=String(i+1).padStart(2,'0');o.textContent=m;mEl.appendChild(o)});
-  mEl.value=String(NOW.getMonth()+1).padStart(2,'0');
-  mEl.addEventListener('change',updateDayOptions);
-
+  rebuildMonthSelect();
+  document.getElementById('evt-date-m').addEventListener('change',updateDayOptions);
   updateDayOptions();
   document.getElementById('evt-date-d').value=String(NOW.getDate()).padStart(2,'0');
 }
@@ -571,7 +583,17 @@ function getSelectedTime(){
   const h=document.getElementById('evt-hr').value;
   const m=document.getElementById('evt-min').value;
   const ap=document.getElementById('evt-ampm').value;
-  return`${h}:${m} ${ap}`;
+  // always store as English AM/PM for ICS compatibility
+  const apEn=(ap==='上午'||ap==='AM')?'AM':'PM';
+  return`${h}:${m} ${apEn}`;
+}
+function localizeTime(timeStr){
+  if(!timeStr) return '';
+  if(lang==='zh'){
+    const [hm,ap]=timeStr.split(' ');
+    return (ap==='AM'?'\u4e0a\u5348':'\u4e0b\u5348')+' '+hm;
+  }
+  return timeStr;
 }
 document.getElementById('evt-recur').addEventListener('change',function(){
   document.getElementById('custom-days-wrap').classList.toggle('hidden',this.value!=='custom');
@@ -599,7 +621,7 @@ function renderCatPicker(){
   document.getElementById('cat-picker').innerHTML=FOOD_CATS.map(c=>`
     <button class="cat-pick-btn" onclick="openSmodal('${c.key}')">
       <span class="cat-pick-icon">${c.icon}</span>
-      <span class="cat-pick-label">${c.label}</span>
+      <span class="cat-pick-label">${I18N[lang].foodCats[c.key]||c.label}</span>
     </button>`).join('');
 }
 
@@ -749,9 +771,9 @@ function openSmodal(catKey){
   smodalCat=catKey;
   const existing=foodEntries.find(f=>f.catKey===catKey);
 
-  document.getElementById('smodal-title').textContent=cat.icon+' '+cat.label;
-  document.getElementById('smodal-mode-label').textContent=existing?'Tap memory or scroll to edit':'Tap memory or scroll to set amount';
-  document.getElementById('smodal-save-btn').textContent=existing?'Save':'Add';
+  document.getElementById('smodal-title').textContent=cat.icon+' '+(I18N[lang].foodCats[cat.key]||cat.label);
+  document.getElementById('smodal-mode-label').textContent=existing?t('tapMemoryEdit'):t('tapMemory');
+  document.getElementById('smodal-save-btn').textContent=existing?t('update'):t('add');
 
   // show custom name field only for 'other'
   const nameWrap=document.getElementById('custom-name-wrap');
@@ -795,23 +817,24 @@ function renderFoods(){
   renderCatPicker();
   const el=document.getElementById('food-list');
   if(!foodEntries.length){
-    el.innerHTML='<div class="empty-msg" style="padding:.75rem 0 1rem">No food logged yet — tap a category below</div>';
+    el.innerHTML=`<div class="empty-msg" style="padding:.75rem 0 1rem">${t('noFoodYet')}</div>`;
     updateCalc();return;
   }
   el.innerHTML=foodEntries.map(f=>{
     const cat=catByKey(f.catKey||'other');
     const kcal=Math.round(f.grams*f.kcalPer100/100);
+    const catLabel=I18N[lang].foodCats[cat.key]||cat.label;
     return`<div class="food-cat-row" onclick="openSmodal('${f.catKey||'other'}')">
       <div class="fcat-left">
         <span class="fcat-icon">${cat.icon}</span>
         <div class="fcat-info">
-          <div class="fcat-name">${cat.label}</div>
+          <div class="fcat-name">${f.catKey==='other'?f.name:catLabel}</div>
           <div class="fcat-sub">${f.grams}g · ${f.kcalPer100} kcal/100g</div>
         </div>
       </div>
       <div class="fcat-right">
         <span class="fcat-kcal">${kcal} kcal</span>
-        <span class="fcat-edit-hint">Edit</span>
+        <span class="fcat-edit-hint">${lang==='zh'?'編輯':'Edit'}</span>
         <button class="fcat-del" onclick="event.stopPropagation();removeFoodEntry('${f.id}')">✕</button>
       </div>
     </div>`;
@@ -831,7 +854,7 @@ function updateCalc(){
   fill.style.width=Math.min(pct,100)+'%';
   fill.classList.toggle('over',over);
   const rem=goal-total;
-  document.getElementById('prog-left').textContent=over?`${Math.abs(rem)} kcal over goal`:`${rem} kcal remaining`;
+  document.getElementById('prog-left').textContent=over?`${Math.abs(rem)} ${t('overGoal')}`:`${rem} ${t('remaining')}`;
   document.getElementById('prog-pct').textContent=pct+'%';
   const d=loadData();if(!d.dailyLog)d.dailyLog={};
   d.dailyLog[TODAY]=total;dailyLog=d.dailyLog;
@@ -842,13 +865,15 @@ function updateCalc(){
 function renderEvents(){
   const el=document.getElementById('event-list');
   const sorted=[...events].sort((a,b)=>b.date.localeCompare(a.date));
-  if(!sorted.length){el.innerHTML='<div class="empty-msg">No records yet</div>';return}
+  if(!sorted.length){el.innerHTML=`<div class="empty-msg">${t('noRecords')}</div>`;return}
+  const L=I18N[lang];
   el.innerHTML=sorted.map(e=>{
-    const recurLabel=e.recur==='custom'?`Every ${e.customDays} days`:RECUR_LABELS[e.recur]||'';
+    const typeLabel=L.evtTypes[e.type]||e.type;
+    const recurLabel=e.recur==='custom'?L.customDaysLabel.replace('{n}',e.customDays):L.recurLabels[e.recur]||'';
     return`<div class="event-item">
-      <span class="badge ${e.type}">${TYPE_LABELS[e.type]}</span>
+      <span class="badge ${e.type}">${typeLabel}</span>
       <div class="ev-body">
-        <div class="ev-date">${e.date}${e.time?' · '+e.time:''}</div>
+        <div class="ev-date">${e.date}${e.time?' · '+localizeTime(e.time):''}</div>
         ${e.note?`<div class="ev-note">${e.note}</div>`:''}
         ${recurLabel?`<div class="ev-recur">↻ ${recurLabel}</div>`:''}
       </div>
@@ -868,18 +893,17 @@ function addEvent(){
   saveData();renderEvents();
 }
 function delEvent(id){
-  if(confirm('Delete this record?')){events=events.filter(e=>e.id!==id);saveData();renderEvents()}
+  if(confirm(t('deleteConfirm'))){events=events.filter(e=>e.id!==id);saveData();renderEvents()}
 }
 
 // ── ICS Export ────────────────────────────────
 function exportICS(){
-  if(!events.length){alert('No events to export.');return}
+  if(!events.length){alert(lang==='zh'?'尚無事項可匯出。':'No events to export.');return}
   const lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Cat Health Tracker//EN','CALSCALE:GREGORIAN'];
   events.forEach(e=>{
     const dt=e.date.replace(/-/g,'');
     let dtStr=dt;
     if(e.time){
-      // parse 12h time
       const [hm,ap]=e.time.split(' ');
       let [hh,mm]=hm.split(':').map(Number);
       if(ap==='PM'&&hh!==12)hh+=12;
@@ -888,11 +912,12 @@ function exportICS(){
     }
     const recurMap={daily:'FREQ=DAILY',weekly:'FREQ=WEEKLY',biweekly:'FREQ=WEEKLY;INTERVAL=2',monthly:'FREQ=MONTHLY'};
     const recurStr=e.recur==='custom'?`FREQ=DAILY;INTERVAL=${e.customDays}`:recurMap[e.recur]||null;
+    const typeLabel=I18N.en.evtTypes[e.type]||e.type; // always English for ICS
     lines.push('BEGIN:VEVENT');
     lines.push(`UID:${e.id}@cat-health`);
     if(e.time){lines.push(`DTSTART:${dtStr}`);lines.push(`DTEND:${dtStr}`);}
     else{lines.push(`DTSTART;VALUE=DATE:${dt}`);lines.push(`DTEND;VALUE=DATE:${dt}`);}
-    lines.push(`SUMMARY:${document.getElementById('cat-name').textContent} – ${TYPE_LABELS[e.type]}`);
+    lines.push(`SUMMARY:${document.getElementById('cat-name').textContent} – ${typeLabel}`);
     if(e.note) lines.push(`DESCRIPTION:${e.note}`);
     if(recurStr) lines.push(`RRULE:${recurStr}`);
     lines.push('END:VEVENT');
@@ -943,7 +968,7 @@ function renderChart(){
     // show weekly averages for current month
     const target=new Date(NOW.getFullYear(),NOW.getMonth()+chartMonthOffset,1);
     const y=target.getFullYear(),m=target.getMonth();
-    document.getElementById('nav-label').textContent=`${MONTHS_SHORT[m]} ${y}`;
+    document.getElementById('nav-label').textContent=lang==='zh'?`${y}年${m+1}月`:`${monthsShort()[m]} ${y}`;
     document.getElementById('breadcrumb').classList.add('hidden');
 
     const weeks=getWeeksInMonth(y,m);
@@ -958,39 +983,40 @@ function renderChart(){
     });
     const filled=values.filter(v=>v>0);
     const avg=filled.length?Math.round(filled.reduce((a,b)=>a+b,0)/filled.length):null;
-    meta=avg!==null?`Monthly avg: <span>${avg} kcal/day</span> · Goal: <span>${goal} kcal</span>`:`No data for this month`;
+    const L=I18N[lang];
+    meta=avg!==null?`${L.monthAvg.replace('{n}',avg)} · ${L.goal}: <span>${goal} kcal</span>`:L.noData;
 
-    // nav limits
     const minOff=-11,maxOff=0;
     document.getElementById('btn-prev').disabled=chartMonthOffset<=minOff;
     document.getElementById('btn-next').disabled=chartMonthOffset>=maxOff;
 
-    buildChart(labels,values,goal,meta,accent,accentFade,goalColor,redFade,'Week avg kcal/day',
+    buildChart(labels,values,goal,meta,accent,accentFade,goalColor,redFade,L.weekBtn+' avg kcal/day',
       chartView==='month'?weeks:null);
 
   } else {
-    // week view: show daily values for current week
-    // chartWeekOffset relative to current week
     const weekStart=new Date(NOW);
     weekStart.setDate(NOW.getDate()-NOW.getDay()+chartWeekOffset*7);
     const y=weekStart.getFullYear(),m=weekStart.getMonth(),d=weekStart.getDate();
+    const DOW=lang==='zh'?['日','一','二','三','四','五','六']:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
     const days=[];
     for(let i=0;i<7;i++){
       const dd=new Date(y,m,d+i);
       const key=dd.toISOString().split('T')[0];
-      const dow=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][dd.getDay()];
-      days.push({label:`${dow} ${dd.getDate()}`,value:dailyLog[key]||0});
+      days.push({label:`${DOW[dd.getDay()]} ${dd.getDate()}`,value:dailyLog[key]||0});
     }
     const endDate=new Date(y,m,d+6);
-    document.getElementById('nav-label').textContent=
-      `${MONTHS_SHORT[weekStart.getMonth()]} ${weekStart.getDate()} – ${MONTHS_SHORT[endDate.getMonth()]} ${endDate.getDate()}`;
+    const MS=monthsShort();
+    document.getElementById('nav-label').textContent=lang==='zh'
+      ?`${weekStart.getMonth()+1}月${weekStart.getDate()}日 – ${endDate.getMonth()+1}月${endDate.getDate()}日`
+      :`${MS[weekStart.getMonth()]} ${weekStart.getDate()} – ${MS[endDate.getMonth()]} ${endDate.getDate()}`;
     document.getElementById('breadcrumb').classList.add('hidden');
 
     labels=days.map(d=>d.label);
     values=days.map(d=>d.value);
-    const filled=values.filter(v=>v>0);
-    const avg=filled.length?Math.round(filled.reduce((a,b)=>a+b,0)/filled.length):null;
-    meta=avg!==null?`Week avg: <span>${avg} kcal/day</span> · Goal: <span>${goal} kcal</span>`:`No data for this week`;
+    const filled2=values.filter(v=>v>0);
+    const avg2=filled2.length?Math.round(filled2.reduce((a,b)=>a+b,0)/filled2.length):null;
+    const L2=I18N[lang];
+    meta=avg2!==null?`${L2.weekAvg.replace('{n}',avg2)} · ${L2.goal}: <span>${goal} kcal</span>`:L2.noDataWeek;
 
     const minOff=-51,maxOff=0;
     document.getElementById('btn-prev').disabled=chartWeekOffset<=minOff;
@@ -1023,7 +1049,7 @@ function buildChart(labels,values,goal,meta,accent,accentFade,goalColor,redFade,
     options:{
       responsive:true,maintainAspectRatio:false,
       ...clickHandler,
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.dataset.label==='Goal'?`Goal: ${goal} kcal`:`${ctx.parsed.y} kcal/day`}}},
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.dataset.label===I18N[lang].goal?`${I18N[lang].goal}: ${goal} kcal`:`${ctx.parsed.y} kcal/day`}}},
       scales:{
         x:{grid:{display:false},ticks:{font:{size:11},color:'#a8927f'}},
         y:{grid:{color:'rgba(0,0,0,0.05)'},ticks:{font:{size:11},color:'#a8927f'},beginAtZero:true,suggestedMax:Math.max(goal*1.3,50)}
@@ -1031,26 +1057,27 @@ function buildChart(labels,values,goal,meta,accent,accentFade,goalColor,redFade,
     }
   });
   document.getElementById('chart-meta').innerHTML=meta;
-  // hint for month view
   if(weeksMeta&&values.some(v=>v>0)){
-    document.getElementById('chart-meta').innerHTML+=` <span style="font-size:11px;color:var(--text3)">· tap bar to see daily</span>`;
+    document.getElementById('chart-meta').innerHTML+=` <span style="font-size:11px;color:var(--text3)">${t('tapBarHint')}</span>`;
   }
 }
 
 function drillIntoWeek(w){
-  // switch to week view for this specific week
   const goal=+document.getElementById('daily-goal').value||250;
-  const accent='#3b2314';
-  const accentFade='rgba(59,35,20,0.13)';
-  const redFade='rgba(192,57,43,0.7)';
-  const goalColor='rgba(192,57,43,0.55)';
-
-  const days=getDaysInWeek(w.year,w.month,w.wStart,w.wEnd);
+  const accent='#3b2314',accentFade='rgba(59,35,20,0.13)',redFade='rgba(192,57,43,0.7)',goalColor='rgba(192,57,43,0.55)';
+  const DOW=lang==='zh'?['日','一','二','三','四','五','六']:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const days=[];
+  for(let d=w.wStart;d<=w.wEnd;d++){
+    const key=`${w.year}-${String(w.month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const dow=DOW[new Date(w.year,w.month,d).getDay()];
+    days.push({label:`${dow} ${d}`,value:dailyLog[key]||0});
+  }
   const labels=days.map(d=>d.label);
   const values=days.map(d=>d.value);
   const filled=values.filter(v=>v>0);
   const avg=filled.length?Math.round(filled.reduce((a,b)=>a+b,0)/filled.length):null;
-  const meta=avg!==null?`Week avg: <span>${avg} kcal/day</span> · Goal: <span>${goal} kcal</span>`:`No data for this week`;
+  const L=I18N[lang];
+  const meta=avg!==null?`${L.weekAvg.replace('{n}',avg)} · ${L.goal}: <span>${goal} kcal</span>`:L.noDataWeek;
 
   document.getElementById('nav-label').textContent=`${w.startStr} – ${w.endStr}`;
   document.getElementById('breadcrumb').classList.remove('hidden');
@@ -1104,32 +1131,33 @@ function renderOverview(){
 
   renderChart();
 
-  const rules={bath:{days:14,label:'Bath'},vet:{days:365,label:'Vet visit'},checkup:{days:365,label:'Health check'},vaccine:{days:365,label:'Vaccination'}};
+  const L=I18N[lang];
+  const rules={bath:{days:14,key:'bath'},vet:{days:365,key:'vet'},checkup:{days:365,key:'checkup'},vaccine:{days:365,key:'vaccine'}};
   const upcoming=[];
-  Object.entries(rules).forEach(([t,r])=>{
-    const last=events.filter(e=>e.type===t).sort((a,b)=>b.date.localeCompare(a.date));
+  Object.entries(rules).forEach(([type,r])=>{
+    const last=events.filter(e=>e.type===type).sort((a,b)=>b.date.localeCompare(a.date));
     if(last.length){
       const next=new Date(last[0].date);next.setDate(next.getDate()+r.days);
       const diff=Math.round((next-now)/864e5);
-      upcoming.push({label:r.label,date:next.toISOString().split('T')[0],diff});
+      upcoming.push({label:L.evtTypes[r.key],date:next.toISOString().split('T')[0],diff});
     }
   });
   upcoming.sort((a,b)=>a.diff-b.diff);
   const upEl=document.getElementById('upcoming-list');
   upEl.innerHTML=upcoming.length?upcoming.map(u=>{
     const cls=u.diff<0?'overdue':u.diff<=7?'soon':'ok';
-    const txt=u.diff<0?`${Math.abs(u.diff)}d overdue`:u.diff===0?'Today':`In ${u.diff} days`;
+    const txt=u.diff<0?`${Math.abs(u.diff)} ${L.dOverdue}`:u.diff===0?L.today:L.inDays.replace('{n}',u.diff);
     return`<div class="upcoming-item"><span style="font-weight:500">${u.label}</span><span style="font-size:12px;color:var(--text3)">${u.date}</span><span class="days-pill ${cls}">${txt}</span></div>`;
-  }).join(''):'<div class="empty-msg">Add events to see reminders</div>';
+  }).join(''):`<div class="empty-msg">${L.addEventsReminder}</div>`;
 
   const recent=[...events].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
   const reEl=document.getElementById('recent-list');
   reEl.innerHTML=recent.length?recent.map(e=>`
     <div class="upcoming-item">
-      <span class="badge ${e.type}">${TYPE_LABELS[e.type]}</span>
+      <span class="badge ${e.type}">${L.evtTypes[e.type]||e.type}</span>
       <span style="flex:1;font-size:13px;color:var(--text2);margin:0 8px">${e.note||'—'}</span>
-      <span style="font-size:12px;color:var(--text3)">${e.date}${e.time?' '+e.time:''}</span>
-    </div>`).join(''):'<div class="empty-msg">No records yet</div>';
+      <span style="font-size:12px;color:var(--text3)">${e.date}${e.time?' '+localizeTime(e.time):''}</span>
+    </div>`).join(''):`<div class="empty-msg">${L.noRecordsYet}</div>`;
 }
 
 // ── Name modal ────────────────────────────────
@@ -1145,16 +1173,189 @@ function saveName(){
   saveData();closeNameModal();
 }
 
-// ── Init ──────────────────────────────────────
+// ── i18n ──────────────────────────────────────
+const I18N={
+  en:{
+    editName:'Edit name', langBtn:'中文',
+    tabs:['Calories','Events','Overview'],
+    dailyGoal:'Daily Goal', targetKcal:'Target kcal / day',
+    todayFood:"Today's Food", addFood:'Add food',
+    todayTotal:"Today's total",
+    addRecord:'Add Record',
+    evtTypes:{bath:'Bath',vet:'Vet visit',checkup:'Health check',vaccine:'Vaccination',grooming:'Grooming',other:'Other'},
+    dateLabel:'Date', timeLabel:'Time', notesLabel:'Notes (optional)',
+    repeatLabel:'Repeat',
+    recurOpts:{none:'No repeat',daily:'Every day',weekly:'Every week',biweekly:'Every 2 weeks',monthly:'Every month',custom:'Custom (days)'},
+    everyNDays:'Every N days',
+    saveRecord:'Save record', exportICS:'Export to Calendar (.ics)',
+    history:'History', noRecords:'No records yet',
+    summary:'Summary', todayLbl:'Today', thisWeek:'This week', lastBath:'Last bath',
+    calorieHistory:'Calorie History',
+    monthBtn:'Month', weekBtn:'Week', barBtn:'Bar', lineBtn:'Line',
+    backToMonth:'← Back to month',
+    upcomingReminders:'Upcoming reminders', recentEvents:'Recent events',
+    addEventsReminder:'Add events to see reminders', noRecordsYet:'No records yet',
+    noFoodYet:'No food logged yet — tap a category below',
+    overGoal:'kcal over goal', remaining:'kcal remaining',
+    thisServing:'This serving',
+    cancel:'Cancel', save:'Save', add:'Add', update:'Update',
+    tapMemory:'Tap memory or scroll to set amount', tapMemoryEdit:'Tap memory or scroll to edit',
+    recentTap:'Recent — tap to use',
+    foodName:'Food name', foodNamePh:'e.g. Bone broth, Kefir…',
+    amountG:'Amount (g)', kcalPer:'kcal / 100g',
+    catName:"Cat's name", catNameDesc:'Enter a name to display in the header.',
+    catNamePh:'e.g. Luna', deleteConfirm:'Delete this record?',
+    photoLabel:'Photo', editPhoto:'Edit',
+    recurLabels:{none:'',daily:'Daily',weekly:'Weekly',biweekly:'Every 2 weeks',monthly:'Monthly'},
+    customDaysLabel:'Every {n} days',
+    dOverdue:'d overdue', inDays:'In {n} days', today:'Today',
+    am:'AM', pm:'PM',
+    weekAvg:'Week avg: {n} kcal/day', monthAvg:'Monthly avg: {n} kcal/day',
+    goal:'Goal', noData:'No data for this month', noDataWeek:'No data for this week',
+    tapBarHint:'· tap bar to see daily',
+    foodCats:{raw:'Raw Meat',dry:'Dry Food',wet:'Wet Food',treat:'Treats',other:'Other'},
+  },
+  zh:{
+    editName:'編輯名字', langBtn:'EN',
+    tabs:['熱量','事項','總覽'],
+    dailyGoal:'每日目標', targetKcal:'目標 kcal / 天',
+    todayFood:'今日食物', addFood:'新增食物',
+    todayTotal:'今日合計',
+    addRecord:'新增記錄',
+    evtTypes:{bath:'洗澡',vet:'看醫生',checkup:'健康檢查',vaccine:'打疫苗',grooming:'美容',other:'其他'},
+    dateLabel:'日期', timeLabel:'時間', notesLabel:'備註（可選）',
+    repeatLabel:'重複',
+    recurOpts:{none:'不重複',daily:'每天',weekly:'每週',biweekly:'每兩週',monthly:'每月',custom:'自訂（天數）'},
+    everyNDays:'每 N 天',
+    saveRecord:'儲存記錄', exportICS:'匯出到行事曆（.ics）',
+    history:'歷史記錄', noRecords:'尚無記錄',
+    summary:'今日概況', todayLbl:'今日', thisWeek:'本週事項', lastBath:'上次洗澡',
+    calorieHistory:'熱量記錄',
+    monthBtn:'月', weekBtn:'週', barBtn:'長條', lineBtn:'折線',
+    backToMonth:'← 返回月視圖',
+    upcomingReminders:'即將到期', recentEvents:'最近事件',
+    addEventsReminder:'新增事項後顯示提醒', noRecordsYet:'尚無記錄',
+    noFoodYet:'尚未記錄食物 — 點下方類別新增',
+    overGoal:'kcal 超出目標', remaining:'kcal 剩餘',
+    thisServing:'本份熱量',
+    cancel:'取消', save:'儲存', add:'新增', update:'更新',
+    tapMemory:'點記憶或滾動設定份量', tapMemoryEdit:'點記憶或滾動編輯份量',
+    recentTap:'最近記錄 — 點選套用',
+    foodName:'食物名稱', foodNamePh:'例如：骨頭湯、克菲爾…',
+    amountG:'份量（克）', kcalPer:'kcal / 100g',
+    catName:'貓咪名字', catNameDesc:'輸入顯示在標題的名字。',
+    catNamePh:'例如：露娜', deleteConfirm:'確定刪除這筆記錄？',
+    photoLabel:'照片', editPhoto:'編輯',
+    recurLabels:{none:'',daily:'每天',weekly:'每週',biweekly:'每兩週',monthly:'每月'},
+    customDaysLabel:'每 {n} 天',
+    dOverdue:'天逾期', inDays:'還有 {n} 天', today:'今天',
+    am:'上午', pm:'下午',
+    weekAvg:'週平均：{n} kcal/天', monthAvg:'月平均：{n} kcal/天',
+    goal:'目標', noData:'本月尚無數據', noDataWeek:'本週尚無數據',
+    tapBarHint:'· 點長條看每日數據',
+    foodCats:{raw:'生肉',dry:'乾糧',wet:'濕食',treat:'點心',other:'其他'},
+  }
+};
+
+function t(key){return I18N[lang][key]||I18N.en[key]||key}
+
+function toggleLang(){
+  lang=lang==='en'?'zh':'en';
+  document.body.classList.toggle('zh',lang==='zh');
+  const d=loadData();d.lang=lang;localStorage.setItem('cat-v4',JSON.stringify(d));
+  applyLang();
+}
+
+function applyLang(){
+  const L=I18N[lang];
+  // header
+  document.getElementById('lang-btn').textContent=L.langBtn;
+  // tabs
+  document.querySelectorAll('.tab').forEach((b,i)=>b.textContent=L.tabs[i]);
+  // calories panel
+  document.querySelector('#panel-calories .card:first-child .slabel').textContent=L.dailyGoal;
+  document.querySelector('#panel-calories .card:first-child label').textContent=L.targetKcal;
+  document.querySelectorAll('#panel-calories .card')[1].querySelector('.slabel').textContent=L.todayFood;
+  document.querySelector('#panel-calories [style*="Add food"]')&&(()=>{})();
+  document.querySelectorAll('#panel-calories .slabel')[1].textContent=L.addFood;
+  document.querySelector('.total-lbl').textContent=L.todayTotal;
+  // events panel
+  document.querySelector('#panel-events .slabel').textContent=L.addRecord;
+  document.querySelector('#evt-type option[value=bath]').textContent=L.evtTypes.bath;
+  document.querySelector('#evt-type option[value=vet]').textContent=L.evtTypes.vet;
+  document.querySelector('#evt-type option[value=checkup]').textContent=L.evtTypes.checkup;
+  document.querySelector('#evt-type option[value=vaccine]').textContent=L.evtTypes.vaccine;
+  document.querySelector('#evt-type option[value=grooming]').textContent=L.evtTypes.grooming;
+  document.querySelector('#evt-type option[value=other]').textContent=L.evtTypes.other;
+  document.querySelectorAll('.form-label')[0].textContent=L.dateLabel;
+  document.querySelectorAll('.form-label')[1].textContent=L.timeLabel;
+  document.getElementById('evt-note').placeholder=L.notesLabel;
+  document.querySelectorAll('.form-label')[2].textContent=L.repeatLabel;
+  document.querySelectorAll('.form-label')[3].textContent=L.everyNDays;
+  document.querySelector('#evt-recur option[value=none]').textContent=L.recurOpts.none;
+  document.querySelector('#evt-recur option[value=daily]').textContent=L.recurOpts.daily;
+  document.querySelector('#evt-recur option[value=weekly]').textContent=L.recurOpts.weekly;
+  document.querySelector('#evt-recur option[value=biweekly]').textContent=L.recurOpts.biweekly;
+  document.querySelector('#evt-recur option[value=monthly]').textContent=L.recurOpts.monthly;
+  document.querySelector('#evt-recur option[value=custom]').textContent=L.recurOpts.custom;
+  document.querySelector('.save-btn').textContent=L.saveRecord;
+  document.querySelector('.ics-btn').lastChild.textContent=' '+L.exportICS;
+  document.querySelectorAll('#panel-events .slabel')[1].textContent=L.history;
+  // overview panel
+  document.querySelectorAll('#panel-overview .slabel')[0].textContent=L.summary;
+  document.querySelectorAll('.metric-lbl')[0].textContent=L.todayLbl;
+  document.querySelectorAll('.metric-lbl')[1].textContent=L.thisWeek;
+  document.querySelectorAll('.metric-lbl')[2].textContent=L.lastBath;
+  document.querySelectorAll('#panel-overview .slabel')[1].textContent=L.calorieHistory;
+  document.getElementById('vt-month').textContent=L.monthBtn;
+  document.getElementById('vt-week').textContent=L.weekBtn;
+  document.getElementById('ct-bar').textContent=L.barBtn;
+  document.getElementById('ct-line').textContent=L.lineBtn;
+  document.querySelectorAll('#panel-overview .slabel')[2].textContent=L.upcomingReminders;
+  document.querySelectorAll('#panel-overview .slabel')[3].textContent=L.recentEvents;
+  // date/time selectors
+  rebuildMonthSelect();
+  document.getElementById('opt-am').textContent=L.am;
+  document.getElementById('opt-pm').textContent=L.pm;
+  // breadcrumb
+  const bcBack=document.getElementById('bc-back');
+  if(bcBack) bcBack.textContent=L.backToMonth;
+  // custom name field label
+  const customNameLabel=document.querySelector('#custom-name-wrap div');
+  if(customNameLabel) customNameLabel.textContent=L.foodName;
+  document.getElementById('custom-name-input').placeholder=L.foodNamePh;
+  // memory section label
+  const memLabel=document.querySelector('.mem-section-label');
+  if(memLabel) memLabel.textContent=L.recentTap;
+  // smodal picker col labels
+  document.querySelectorAll('.picker-col-label')[0].textContent=L.amountG;
+  document.querySelectorAll('.picker-col-label')[1].textContent=L.kcalPer;
+  document.querySelector('.kcal-preview-lbl').textContent=L.thisServing;
+  document.querySelector('.smodal-cancel').textContent=L.cancel;
+  // name modal
+  document.querySelector('#name-modal h3').textContent=L.catName;
+  document.querySelector('#name-modal p').textContent=L.catNameDesc;
+  document.getElementById('name-input').placeholder=L.catNamePh;
+  document.querySelector('.m-cancel').textContent=L.cancel;
+  document.querySelector('.m-save').textContent=L.save;
+  // avatar placeholder
+  document.querySelector('.av-ph span').textContent=L.photoLabel;
+  document.querySelector('.av-ov').textContent=L.editPhoto;
+  // re-render dynamic content
+  renderFoods();
+  renderEvents();
+  updateCalc();
+}
 function save(){saveData()}
+lang=data.lang||'en';
+document.body.classList.toggle('zh',lang==='zh');
 buildDrum(drumGI,'track-gi');
 buildDrum(drumGD,'track-gd');
 buildDrum(drumK,'track-k');
 attachDrumEvents(drumGI,document.getElementById('drum-gi'));
 attachDrumEvents(drumGD,document.getElementById('drum-gd'));
 attachDrumEvents(drumK,document.getElementById('drum-k'));
-renderFoods();
-renderEvents();
+applyLang();
 </script>
 </body>
 </html>
