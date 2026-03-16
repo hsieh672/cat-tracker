@@ -637,7 +637,7 @@ function attachDrumEvents(drum,drumEl){
     e.preventDefault();
     const y=(e.touches?e.touches[0].clientY:e.clientY);
     const delta=drum.startY-y;
-    const idxDelta=Math.round(delta/ITEM_H);
+    const idxDelta=Math.round(delta/16); // 16px per step (was 48)
     const newIdx=Math.max(0,Math.min(drum.opts.length-1,drum.startIdx+idxDelta));
     if(newIdx!==drum.idx) setDrumIdx(drum,newIdx,false);
   };
@@ -648,10 +648,10 @@ function attachDrumEvents(drum,drumEl){
   drumEl.addEventListener('mousedown',onStart);
   window.addEventListener('mousemove',onMove);
   window.addEventListener('mouseup',onEnd);
-  // wheel scroll
+  // wheel scroll — 3 steps at a time
   drumEl.addEventListener('wheel',e=>{
     e.preventDefault();
-    const delta=e.deltaY>0?1:-1;
+    const delta=e.deltaY>0?3:-3;
     setDrumIdx(drum,drum.idx+delta,true);
   },{passive:false});
 }
