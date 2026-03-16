@@ -93,7 +93,7 @@ body{display:flex;flex-direction:column;max-width:520px;margin:0 auto;width:100%
 .picker-col-label{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;text-align:center}
 .metric-lbl{font-size:10px;color:var(--text3);margin-bottom:5px;text-transform:uppercase;letter-spacing:.06em}
 /* suppress letter-spacing for CJK */
-body.zh .slabel,body.zh .picker-col-label,body.zh .metric-lbl,body.zh .form-label,body.zh .aff-label,body.zh .mem-section-label{letter-spacing:0;text-transform:none}
+body.zh .slabel,body.zh .picker-col-label,body.zh .metric-lbl,body.zh .form-label,body.zh .aff-label,body.zh .mem-section-label,body.zh .time-row-lbl{letter-spacing:0;text-transform:none}
 .drum{position:relative;height:144px;overflow:hidden;border-radius:12px;background:var(--bg2);border:.5px solid var(--border);touch-action:none;user-select:none;cursor:grab;min-width:48px}
 .drum:active{cursor:grabbing}
 .drum-track{position:absolute;left:0;right:0;top:48px;transition:transform .08s linear}
@@ -146,6 +146,13 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .save-btn:active{opacity:.85}
 .ics-btn{width:100%;padding:10px;background:none;border:.5px solid var(--border2);border-radius:var(--rs);font-size:13px;color:var(--text2);cursor:pointer;font-family:inherit;margin-top:6px;display:flex;align-items:center;justify-content:center;gap:6px}
 .ics-btn:active{background:var(--bg2)}
+.allday-btn{padding:6px 14px;background:var(--bg2);border:.5px solid var(--border2);border-radius:99px;font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;font-family:inherit;transition:all .12s}
+.allday-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.time-row{display:flex;align-items:center;gap:8px}
+.time-row-lbl{font-size:12px;font-weight:600;color:var(--text3);min-width:38px;text-transform:uppercase;letter-spacing:.05em}
+.time-selects{display:flex;align-items:center;gap:4px;flex:1}
+.time-sel-sm{flex:1;min-width:0;padding:9px 4px;border:.5px solid var(--border2);border-radius:var(--rs);background:var(--bg);color:var(--text);font-family:inherit;font-size:14px;outline:none;-webkit-appearance:none;appearance:none;text-align:center}
+.time-colon{color:var(--text3);font-size:16px;flex-shrink:0}
 .event-item{display:flex;align-items:flex-start;gap:10px;padding:12px 0;border-bottom:.5px solid var(--border)}
 .event-item:last-child{border-bottom:none}
 .badge{font-size:11px;font-weight:700;padding:3px 9px;border-radius:99px;white-space:nowrap}
@@ -249,10 +256,18 @@ canvas#chart{width:100%!important;height:190px!important}
       </div>
     </div>
     <div class="card">
-      <div class="slabel">Today's Food</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div style="display:flex;align-items:center;gap:4px">
+          <button class="nav-btn" onclick="changeViewDate(-1)" id="food-prev">‹</button>
+          <span id="food-date-label" style="font-size:13px;font-weight:600;color:var(--accent);min-width:90px;text-align:center"></span>
+          <button class="nav-btn" onclick="changeViewDate(1)" id="food-next">›</button>
+        </div>
+        <button id="clear-day-btn" onclick="clearDay()" style="background:none;border:.5px solid var(--border2);border-radius:99px;font-size:12px;color:var(--text3);cursor:pointer;padding:4px 10px;font-family:inherit">Clear day</button>
+      </div>
+      <div class="slabel" id="food-card-label">Today's Food</div>
       <div id="food-list"></div>
       <div style="margin-top:10px;border-top:.5px solid var(--border);padding-top:12px">
-        <div class="slabel" style="margin-bottom:10px">Add food</div>
+        <div class="slabel" style="margin-bottom:10px" id="add-food-label">Add food</div>
         <div class="cat-picker" id="cat-picker"></div>
       </div>
       <div class="total-sec">
@@ -289,15 +304,36 @@ canvas#chart{width:100%!important;height:190px!important}
         </div>
       </div>
       <div style="margin-bottom:8px">
-        <span class="form-label">Time</span>
-        <div style="display:flex;gap:6px;align-items:center">
-          <select id="evt-hr" style="flex:1;min-width:0;padding:10px 6px;border:.5px solid var(--border2);border-radius:var(--rs);background:var(--bg);color:var(--text);font-family:inherit;font-size:14px;outline:none;-webkit-appearance:none;appearance:none"></select>
-          <span style="color:var(--text3);font-size:16px;flex-shrink:0">:</span>
-          <select id="evt-min" style="flex:1;min-width:0;padding:10px 6px;border:.5px solid var(--border2);border-radius:var(--rs);background:var(--bg);color:var(--text);font-family:inherit;font-size:14px;outline:none;-webkit-appearance:none;appearance:none"></select>
-          <select id="evt-ampm" style="flex:1;min-width:0;padding:10px 6px;border:.5px solid var(--border2);border-radius:var(--rs);background:var(--bg);color:var(--text);font-family:inherit;font-size:14px;outline:none;-webkit-appearance:none;appearance:none">
-            <option value="AM" id="opt-am">AM</option>
-            <option value="PM" id="opt-pm">PM</option>
-          </select>
+        <span class="form-label" id="lbl-time">Time</span>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+          <button type="button" class="allday-btn active" id="btn-allday" onclick="setTimeMode('allday')">All day</button>
+          <button type="button" class="allday-btn" id="btn-timed" onclick="setTimeMode('timed')">Time range</button>
+        </div>
+        <div id="time-pickers" class="hidden">
+          <div class="time-row">
+            <span class="time-row-lbl" id="lbl-start">Start</span>
+            <div class="time-selects">
+              <select id="evt-hr" class="time-sel-sm"></select>
+              <span class="time-colon">:</span>
+              <select id="evt-min" class="time-sel-sm"></select>
+              <select id="evt-ampm" class="time-sel-sm">
+                <option value="AM" id="opt-am">AM</option>
+                <option value="PM" id="opt-pm">PM</option>
+              </select>
+            </div>
+          </div>
+          <div class="time-row" style="margin-top:6px">
+            <span class="time-row-lbl" id="lbl-end">End</span>
+            <div class="time-selects">
+              <select id="evt-hr2" class="time-sel-sm"></select>
+              <span class="time-colon">:</span>
+              <select id="evt-min2" class="time-sel-sm"></select>
+              <select id="evt-ampm2" class="time-sel-sm">
+                <option value="AM" id="opt-am2">AM</option>
+                <option value="PM" id="opt-pm2" selected>PM</option>
+              </select>
+            </div>
+          </div>
         </div>
       </div>
       <div class="form-row">
@@ -472,13 +508,14 @@ function saveData(){
   const d=loadData();
   d.catName=document.getElementById('cat-name').textContent;
   d.goal=+document.getElementById('daily-goal').value||250;
-  d.foodEntries=foodEntries;
+  if(!d.foodLog) d.foodLog={};
+  d.foodLog[viewDate]=foodEntries;
   d.events=events;
   if(avatarUrl) d.avatar=avatarUrl;
   // persist daily total
   const total=calcTotal();
   if(!d.dailyLog) d.dailyLog={};
-  d.dailyLog[TODAY]=total;
+  d.dailyLog[viewDate]=total;
   dailyLog=d.dailyLog;
   localStorage.setItem('cat-v4',JSON.stringify(d));
 }
@@ -494,9 +531,10 @@ let drumGD={opts:GRAM_DEC_OPTS,idx:0,el:null,track:null,startY:0,startIdx:0,drag
 let drumK={opts:KCAL_OPTS,idx:0,el:null,track:null,startY:0,startIdx:0,dragging:false};
 
 const NOW=new Date();
-const TODAY=NOW.toISOString().split('T')[0];
+const TODAY=(()=>{const y=NOW.getFullYear(),m=String(NOW.getMonth()+1).padStart(2,'0'),d=String(NOW.getDate()).padStart(2,'0');return`${y}-${m}-${d}`})();
 let data=loadData();
-let foodEntries=data.foodEntries||[];
+let viewDate=TODAY; // currently viewed date in calories tab
+let foodEntries=(data.foodLog&&data.foodLog[TODAY])||data.foodEntries||[];
 let events=data.events||[];
 let avatarUrl=data.avatar||null;
 let dailyLog=data.dailyLog||{};
@@ -566,27 +604,41 @@ function getSelectedDate(){
   return`${y}-${m}-${d}`;
 }
 function initTimeSelectors(){
-  const hrEl=document.getElementById('evt-hr');
-  for(let h=1;h<=12;h++){const o=document.createElement('option');o.value=String(h).padStart(2,'0');o.textContent=String(h).padStart(2,'0');hrEl.appendChild(o)}
-  const minEl=document.getElementById('evt-min');
-  for(let m=0;m<60;m+=5){const o=document.createElement('option');o.value=String(m).padStart(2,'0');o.textContent=String(m).padStart(2,'0');minEl.appendChild(o)}
-  // set current time
+  const populateHr=id=>{const el=document.getElementById(id);for(let h=1;h<=12;h++){const o=document.createElement('option');o.value=String(h).padStart(2,'0');o.textContent=String(h).padStart(2,'0');el.appendChild(o)}};
+  const populateMin=id=>{const el=document.getElementById(id);for(let m=0;m<60;m+=5){const o=document.createElement('option');o.value=String(m).padStart(2,'0');o.textContent=String(m).padStart(2,'0');el.appendChild(o)}};
+  populateHr('evt-hr'); populateHr('evt-hr2');
+  populateMin('evt-min'); populateMin('evt-min2');
   let h=NOW.getHours();
   const ampm=h>=12?'PM':'AM';
   h=h%12||12;
-  hrEl.value=String(h).padStart(2,'0');
+  document.getElementById('evt-hr').value=String(h).padStart(2,'0');
   const mm=Math.floor(NOW.getMinutes()/5)*5;
-  minEl.value=String(mm).padStart(2,'0');
+  document.getElementById('evt-min').value=String(mm).padStart(2,'0');
   document.getElementById('evt-ampm').value=ampm;
+  // end time default +1hr
+  const h2=(h%12)+1||1;
+  document.getElementById('evt-hr2').value=String(h2).padStart(2,'0');
+  document.getElementById('evt-min2').value=String(mm).padStart(2,'0');
+  document.getElementById('evt-ampm2').value=ampm==='AM'&&h===12?'PM':ampm==='PM'&&h===12?'AM':ampm;
 }
-function getSelectedTime(){
-  const h=document.getElementById('evt-hr').value;
-  const m=document.getElementById('evt-min').value;
-  const ap=document.getElementById('evt-ampm').value;
-  // always store as English AM/PM for ICS compatibility
-  const apEn=(ap==='上午'||ap==='AM')?'AM':'PM';
+
+let timeMode='allday';
+function setTimeMode(mode){
+  timeMode=mode;
+  document.getElementById('btn-allday').classList.toggle('active',mode==='allday');
+  document.getElementById('btn-timed').classList.toggle('active',mode==='timed');
+  document.getElementById('time-pickers').classList.toggle('hidden',mode==='allday');
+}
+
+function getTimeStr(hrId,minId,ampmId){
+  const h=document.getElementById(hrId).value;
+  const m=document.getElementById(minId).value;
+  const ap=document.getElementById(ampmId).value;
+  const apEn=(ap==='\u4e0a\u5348'||ap==='AM')?'AM':'PM';
   return`${h}:${m} ${apEn}`;
 }
+function getSelectedTime(){return getTimeStr('evt-hr','evt-min','evt-ampm');}
+function getSelectedTimeEnd(){return getTimeStr('evt-hr2','evt-min2','evt-ampm2');}
 function localizeTime(timeStr){
   if(!timeStr) return '';
   if(lang==='zh'){
@@ -594,6 +646,12 @@ function localizeTime(timeStr){
     return (ap==='AM'?'\u4e0a\u5348':'\u4e0b\u5348')+' '+hm;
   }
   return timeStr;
+}
+function formatEventTime(e){
+  const L=I18N[lang];
+  if(e.allday||(!e.time)) return lang==='zh'?'\u5168\u5929':'All day';
+  if(e.timeEnd) return localizeTime(e.time)+' – '+localizeTime(e.timeEnd);
+  return localizeTime(e.time);
 }
 document.getElementById('evt-recur').addEventListener('change',function(){
   document.getElementById('custom-days-wrap').classList.toggle('hidden',this.value!=='custom');
@@ -607,7 +665,47 @@ function switchTab(t){
   if(t==='overview') renderOverview();
 }
 
-// ── Food categories ───────────────────────────
+// ── Food date navigation ──────────────────────
+function updateFoodDateNav(){
+  const isToday=viewDate===TODAY;
+  const [y,m,d]=viewDate.split('-').map(Number);
+  const dt=new Date(y,m-1,d);
+  const MS=monthsShort();
+  const label=isToday?(lang==='zh'?'今天':'Today')
+    :(lang==='zh'?`${m}月${d}日`:`${MS[m-1]} ${d}`);
+  document.getElementById('food-date-label').textContent=label;
+  const nextBtn=document.getElementById('food-next');
+  nextBtn.disabled=isToday;
+  nextBtn.style.opacity=isToday?'0.3':'1';
+  nextBtn.style.cursor=isToday?'default':'pointer';
+  const cardLbl=isToday?t('todayFood'):(lang==='zh'?label+' 食物':label+' Food');
+  document.getElementById('food-card-label').textContent=cardLbl;
+}
+
+function changeViewDate(dir){
+  // parse viewDate manually to avoid timezone shift
+  const [y,m,d]=viewDate.split('-').map(Number);
+  const dt=new Date(y,m-1,d);
+  dt.setDate(dt.getDate()+dir);
+  const ny=dt.getFullYear();
+  const nm=String(dt.getMonth()+1).padStart(2,'0');
+  const nd=String(dt.getDate()).padStart(2,'0');
+  const newDate=`${ny}-${nm}-${nd}`;
+  if(newDate>TODAY) return;
+  viewDate=newDate;
+  const stored=loadData();
+  foodEntries=(stored.foodLog&&stored.foodLog[viewDate])||[];
+  updateFoodDateNav();
+  renderFoods();
+}
+
+function clearDay(){
+  const confirmMsg=lang==='zh'?'確定清空這天的食物記錄？':'Clear all food for this day?';
+  if(!confirm(confirmMsg)) return;
+  foodEntries=[];
+  saveData();
+  renderFoods();
+}
 const FOOD_CATS=[
   {key:'raw',   label:'Raw Meat', icon:'🥩', defaultKcal:130, defaultG:50},
   {key:'dry',   label:'Dry Food', icon:'🌾', defaultKcal:350, defaultG:30},
@@ -815,6 +913,7 @@ function calcTotal(){return Math.round(foodEntries.reduce((s,f)=>s+(f.grams*f.kc
 
 function renderFoods(){
   renderCatPicker();
+  updateFoodDateNav();
   const el=document.getElementById('food-list');
   if(!foodEntries.length){
     el.innerHTML=`<div class="empty-msg" style="padding:.75rem 0 1rem">${t('noFoodYet')}</div>`;
@@ -857,7 +956,7 @@ function updateCalc(){
   document.getElementById('prog-left').textContent=over?`${Math.abs(rem)} ${t('overGoal')}`:`${rem} ${t('remaining')}`;
   document.getElementById('prog-pct').textContent=pct+'%';
   const d=loadData();if(!d.dailyLog)d.dailyLog={};
-  d.dailyLog[TODAY]=total;dailyLog=d.dailyLog;
+  d.dailyLog[viewDate]=total;dailyLog=d.dailyLog;
   localStorage.setItem('cat-v4',JSON.stringify(d));
 }
 
@@ -873,7 +972,7 @@ function renderEvents(){
     return`<div class="event-item">
       <span class="badge ${e.type}">${typeLabel}</span>
       <div class="ev-body">
-        <div class="ev-date">${e.date}${e.time?' · '+localizeTime(e.time):''}</div>
+        <div class="ev-date">${e.date} · ${formatEventTime(e)}</div>
         ${e.note?`<div class="ev-note">${e.note}</div>`:''}
         ${recurLabel?`<div class="ev-recur">↻ ${recurLabel}</div>`:''}
       </div>
@@ -884,11 +983,13 @@ function renderEvents(){
 function addEvent(){
   const type=document.getElementById('evt-type').value;
   const date=getSelectedDate();
-  const time=getSelectedTime();
+  const allday=timeMode==='allday';
+  const time=allday?null:getSelectedTime();
+  const timeEnd=allday?null:getSelectedTimeEnd();
   const note=document.getElementById('evt-note').value.trim();
   const recur=document.getElementById('evt-recur').value;
   const customDays=+document.getElementById('evt-custom-days').value||14;
-  events.push({id:Date.now()+'',type,date,time,note,recur,customDays});
+  events.push({id:Date.now()+'',type,date,allday,time,timeEnd,note,recur,customDays});
   document.getElementById('evt-note').value='';
   saveData();renderEvents();
 }
@@ -902,21 +1003,29 @@ function exportICS(){
   const lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Cat Health Tracker//EN','CALSCALE:GREGORIAN'];
   events.forEach(e=>{
     const dt=e.date.replace(/-/g,'');
-    let dtStr=dt;
-    if(e.time){
-      const [hm,ap]=e.time.split(' ');
+    const toICSTime=t=>{
+      if(!t) return null;
+      const [hm,ap]=t.split(' ');
       let [hh,mm]=hm.split(':').map(Number);
       if(ap==='PM'&&hh!==12)hh+=12;
       if(ap==='AM'&&hh===12)hh=0;
-      dtStr=`${dt}T${String(hh).padStart(2,'0')}${String(mm).padStart(2,'0')}00`;
-    }
+      return`${dt}T${String(hh).padStart(2,'0')}${String(mm).padStart(2,'0')}00`;
+    };
     const recurMap={daily:'FREQ=DAILY',weekly:'FREQ=WEEKLY',biweekly:'FREQ=WEEKLY;INTERVAL=2',monthly:'FREQ=MONTHLY'};
     const recurStr=e.recur==='custom'?`FREQ=DAILY;INTERVAL=${e.customDays}`:recurMap[e.recur]||null;
-    const typeLabel=I18N.en.evtTypes[e.type]||e.type; // always English for ICS
+    const typeLabel=I18N.en.evtTypes[e.type]||e.type;
+    const isAllDay=e.allday||!e.time;
+    const dtStart=isAllDay?null:toICSTime(e.time);
+    const dtEnd=isAllDay?null:(e.timeEnd?toICSTime(e.timeEnd):dtStart);
     lines.push('BEGIN:VEVENT');
     lines.push(`UID:${e.id}@cat-health`);
-    if(e.time){lines.push(`DTSTART:${dtStr}`);lines.push(`DTEND:${dtStr}`);}
-    else{lines.push(`DTSTART;VALUE=DATE:${dt}`);lines.push(`DTEND;VALUE=DATE:${dt}`);}
+    if(isAllDay){
+      lines.push(`DTSTART;VALUE=DATE:${dt}`);
+      lines.push(`DTEND;VALUE=DATE:${dt}`);
+    } else {
+      lines.push(`DTSTART:${dtStart}`);
+      lines.push(`DTEND:${dtEnd}`);
+    }
     lines.push(`SUMMARY:${document.getElementById('cat-name').textContent} – ${typeLabel}`);
     if(e.note) lines.push(`DESCRIPTION:${e.note}`);
     if(recurStr) lines.push(`RRULE:${recurStr}`);
@@ -1156,7 +1265,7 @@ function renderOverview(){
     <div class="upcoming-item">
       <span class="badge ${e.type}">${L.evtTypes[e.type]||e.type}</span>
       <span style="flex:1;font-size:13px;color:var(--text2);margin:0 8px">${e.note||'—'}</span>
-      <span style="font-size:12px;color:var(--text3)">${e.date}${e.time?' '+localizeTime(e.time):''}</span>
+      <span style="font-size:12px;color:var(--text3)">${e.date} · ${formatEventTime(e)}</span>
     </div>`).join(''):`<div class="empty-msg">${L.noRecordsYet}</div>`;
 }
 
@@ -1179,7 +1288,7 @@ const I18N={
     editName:'Edit name', langBtn:'中文',
     tabs:['Calories','Events','Overview'],
     dailyGoal:'Daily Goal', targetKcal:'Target kcal / day',
-    todayFood:"Today's Food", addFood:'Add food',
+    todayFood:"Today's Food", addFood:'Add food', clearDay:'Clear day',
     todayTotal:"Today's total",
     addRecord:'Add Record',
     evtTypes:{bath:'Bath',vet:'Vet visit',checkup:'Health check',vaccine:'Vaccination',grooming:'Grooming',other:'Other'},
@@ -1210,6 +1319,8 @@ const I18N={
     customDaysLabel:'Every {n} days',
     dOverdue:'d overdue', inDays:'In {n} days', today:'Today',
     am:'AM', pm:'PM',
+    allDay:'All day', timeRange:'Time range',
+    startLbl:'Start', endLbl:'End',
     weekAvg:'Week avg: {n} kcal/day', monthAvg:'Monthly avg: {n} kcal/day',
     goal:'Goal', noData:'No data for this month', noDataWeek:'No data for this week',
     tapBarHint:'· tap bar to see daily',
@@ -1219,7 +1330,7 @@ const I18N={
     editName:'編輯名字', langBtn:'EN',
     tabs:['熱量','事項','總覽'],
     dailyGoal:'每日目標', targetKcal:'目標 kcal / 天',
-    todayFood:'今日食物', addFood:'新增食物',
+    todayFood:'今日食物', addFood:'新增食物', clearDay:'清空這天',
     todayTotal:'今日合計',
     addRecord:'新增記錄',
     evtTypes:{bath:'洗澡',vet:'看醫生',checkup:'健康檢查',vaccine:'打疫苗',grooming:'美容',other:'其他'},
@@ -1250,6 +1361,8 @@ const I18N={
     customDaysLabel:'每 {n} 天',
     dOverdue:'天逾期', inDays:'還有 {n} 天', today:'今天',
     am:'上午', pm:'下午',
+    allDay:'全天', timeRange:'指定時段',
+    startLbl:'開始', endLbl:'結束',
     weekAvg:'週平均：{n} kcal/天', monthAvg:'月平均：{n} kcal/天',
     goal:'目標', noData:'本月尚無數據', noDataWeek:'本週尚無數據',
     tapBarHint:'· 點長條看每日數據',
@@ -1275,10 +1388,10 @@ function applyLang(){
   // calories panel
   document.querySelector('#panel-calories .card:first-child .slabel').textContent=L.dailyGoal;
   document.querySelector('#panel-calories .card:first-child label').textContent=L.targetKcal;
-  document.querySelectorAll('#panel-calories .card')[1].querySelector('.slabel').textContent=L.todayFood;
-  document.querySelector('#panel-calories [style*="Add food"]')&&(()=>{})();
-  document.querySelectorAll('#panel-calories .slabel')[1].textContent=L.addFood;
+  document.getElementById('add-food-label').textContent=L.addFood;
+  document.getElementById('clear-day-btn').textContent=L.clearDay;
   document.querySelector('.total-lbl').textContent=L.todayTotal;
+  updateFoodDateNav();
   // events panel
   document.querySelector('#panel-events .slabel').textContent=L.addRecord;
   document.querySelector('#evt-type option[value=bath]').textContent=L.evtTypes.bath;
@@ -1288,7 +1401,11 @@ function applyLang(){
   document.querySelector('#evt-type option[value=grooming]').textContent=L.evtTypes.grooming;
   document.querySelector('#evt-type option[value=other]').textContent=L.evtTypes.other;
   document.querySelectorAll('.form-label')[0].textContent=L.dateLabel;
-  document.querySelectorAll('.form-label')[1].textContent=L.timeLabel;
+  document.getElementById('lbl-time').textContent=L.timeLabel;
+  document.getElementById('btn-allday').textContent=L.allDay;
+  document.getElementById('btn-timed').textContent=L.timeRange;
+  document.getElementById('lbl-start').textContent=L.startLbl;
+  document.getElementById('lbl-end').textContent=L.endLbl;
   document.getElementById('evt-note').placeholder=L.notesLabel;
   document.querySelectorAll('.form-label')[2].textContent=L.repeatLabel;
   document.querySelectorAll('.form-label')[3].textContent=L.everyNDays;
@@ -1317,6 +1434,8 @@ function applyLang(){
   rebuildMonthSelect();
   document.getElementById('opt-am').textContent=L.am;
   document.getElementById('opt-pm').textContent=L.pm;
+  document.getElementById('opt-am2').textContent=L.am;
+  document.getElementById('opt-pm2').textContent=L.pm;
   // breadcrumb
   const bcBack=document.getElementById('bc-back');
   if(bcBack) bcBack.textContent=L.backToMonth;
