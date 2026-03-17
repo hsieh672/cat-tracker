@@ -749,12 +749,11 @@ function switchTab(t){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('panel-'+t).classList.add('active');
   if(t==='overview'){
-    renderOverview();
-    // give the DOM a tick to layout the canvas before Chart.js measures it
-    requestAnimationFrame(()=>{
-      if(chartInstance) chartInstance.resize();
-      if(weightChartInstance) weightChartInstance.resize();
-    });
+    // destroy first so stale instances don't block re-creation
+    if(chartInstance){chartInstance.destroy();chartInstance=null;}
+    if(weightChartInstance){weightChartInstance.destroy();weightChartInstance=null;}
+    // wait one rAF so panel is display:block and canvas has real pixel dimensions
+    requestAnimationFrame(()=>renderOverview());
   }
   if(t==='weight'){weightWeekOffset=0;renderWeightPanel();}
 }
@@ -1809,7 +1808,11 @@ function applyLang(){
   updateCalc();
   // re-render charts if overview is visible (language switch must refresh chart labels & week labels)
   const ovPanel=document.getElementById('panel-overview');
-  if(ovPanel&&ovPanel.classList.contains('active')) renderOverview();
+  if(ovPanel&&ovPanel.classList.contains('active')){
+    if(chartInstance){chartInstance.destroy();chartInstance=null;}
+    if(weightChartInstance){weightChartInstance.destroy();weightChartInstance=null;}
+    renderOverview();
+  }
 }
 function save(){saveData()}
 lang=data.lang||'en';
