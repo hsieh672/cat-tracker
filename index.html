@@ -193,7 +193,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .chart-controls-top{display:flex;align-items:center;gap:4px;width:100%}
 .chart-controls-bottom{display:flex;gap:6px;justify-content:flex-end}
 .chart-wrap{position:relative;height:190px;margin-bottom:6px}
-canvas#chart{width:100%!important;height:190px!important}
+canvas#chart,canvas#weight-chart{display:block;height:190px!important}
 .chart-meta{font-size:12px;color:var(--text3);text-align:center;margin-bottom:4px}
 .chart-meta span{font-weight:600;color:var(--accent)}
 .breadcrumb{font-size:12px;color:var(--text3);margin-bottom:10px;display:flex;align-items:center;gap:4px}
@@ -1208,7 +1208,12 @@ function renderWeightChart(){
   }
 
   const ctx=document.getElementById('weight-chart').getContext('2d');
-  if(weightChartInstance) weightChartInstance.destroy();
+  if(weightChartInstance){weightChartInstance.destroy();weightChartInstance=null;}
+  // Set explicit size
+  const wwrap=document.getElementById('weight-chart').parentElement;
+  const wcw=wwrap.offsetWidth||document.querySelector('.content').offsetWidth||320;
+  document.getElementById('weight-chart').width=wcw;
+  document.getElementById('weight-chart').height=190;
 
   if(!values.length){
     document.getElementById('weight-chart-meta').textContent=lang==='zh'?'本月尚無體重記錄':'No weight data this month';
@@ -1234,7 +1239,7 @@ function renderWeightChart(){
       fill:true,backgroundColor:accentFade,tension:0.3
     }]},
     options:{
-      responsive:true,maintainAspectRatio:false,
+      responsive:false,maintainAspectRatio:false,
       plugins:{
         legend:{display:false},
         tooltip:{callbacks:{label:ctx=>`${ctx.parsed.y.toFixed(1)} kg`}},
@@ -1446,7 +1451,12 @@ function renderChart(){
 
 function buildChart(labels,values,goal,meta,accent,accentFade,goalColor,redFade,dataLabel,weeksMeta){
   const ctx=document.getElementById('chart').getContext('2d');
-  if(chartInstance)chartInstance.destroy();
+  if(chartInstance){chartInstance.destroy();chartInstance=null;}
+  // Set explicit pixel size so chart renders correctly regardless of panel visibility timing
+  const wrap=document.getElementById('chart').parentElement;
+  const cw=wrap.offsetWidth||document.querySelector('.content').offsetWidth||320;
+  document.getElementById('chart').width=cw;
+  document.getElementById('chart').height=190;
 
   const nonZero=values.filter(v=>v>0);
   const goalLine={
@@ -1482,8 +1492,7 @@ function buildChart(labels,values,goal,meta,accent,accentFade,goalColor,redFade,
   chartInstance=new Chart(ctx,{
     data:{labels,datasets:[mainLine,goalLine]},
     options:{
-      responsive:true,maintainAspectRatio:false,
-      ...clickHandler,
+      responsive:false,maintainAspectRatio:false,
       plugins:{
         legend:{display:false},
         inlineLabels:{
