@@ -1206,12 +1206,12 @@ function renderWeightChart(){
   }
 
   const weightCanvasEl=document.getElementById('weight-chart');
-  const ctx=weightCanvasEl.getContext('2d');
   if(weightChartInstance){weightChartInstance.destroy();weightChartInstance=null;}
-  // Use window.innerWidth minus app padding
+  // Set dimensions BEFORE getContext
   const wcw=Math.max(window.innerWidth-48,200);
   weightCanvasEl.width=wcw;
   weightCanvasEl.height=190;
+  const ctx=weightCanvasEl.getContext('2d');
 
   if(!values.length){
     document.getElementById('weight-chart-meta').textContent=lang==='zh'?'本月尚無體重記錄':'No weight data this month';
@@ -1449,12 +1449,12 @@ function renderChart(){
 
 function buildChart(labels,values,goal,meta,accent,accentFade,goalColor,redFade,dataLabel,weeksMeta){
   const canvasEl=document.getElementById('chart');
-  const ctx=canvasEl.getContext('2d');
   if(chartInstance){chartInstance.destroy();chartInstance=null;}
-  // Use window.innerWidth minus app padding — reliable even when panel is hidden
+  // Set dimensions BEFORE getContext — resetting canvas.width invalidates existing ctx
   const cw=Math.max(window.innerWidth-48,200);
   canvasEl.width=cw;
   canvasEl.height=190;
+  const ctx=canvasEl.getContext('2d');
 
   const nonZero=values.filter(v=>v>0);
   const goalLine={
