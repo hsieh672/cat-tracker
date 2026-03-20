@@ -749,11 +749,9 @@ function switchTab(t){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('panel-'+t).classList.add('active');
   if(t==='overview'){
-    // destroy first so stale instances don't block re-creation
     if(chartInstance){chartInstance.destroy();chartInstance=null;}
     if(weightChartInstance){weightChartInstance.destroy();weightChartInstance=null;}
-    // wait one rAF so panel is display:block and canvas has real pixel dimensions
-    requestAnimationFrame(()=>renderOverview());
+    renderOverview();
   }
   if(t==='weight'){weightWeekOffset=0;renderWeightPanel();}
 }
@@ -1207,13 +1205,13 @@ function renderWeightChart(){
     if(cur.getMonth()>m&&cur.getFullYear()>=y) break;
   }
 
-  const ctx=document.getElementById('weight-chart').getContext('2d');
+  const weightCanvasEl=document.getElementById('weight-chart');
+  const ctx=weightCanvasEl.getContext('2d');
   if(weightChartInstance){weightChartInstance.destroy();weightChartInstance=null;}
-  // Set explicit size
-  const wwrap=document.getElementById('weight-chart').parentElement;
-  const wcw=wwrap.offsetWidth||document.querySelector('.content').offsetWidth||320;
-  document.getElementById('weight-chart').width=wcw;
-  document.getElementById('weight-chart').height=190;
+  // Use window.innerWidth minus app padding
+  const wcw=Math.max(window.innerWidth-48,200);
+  weightCanvasEl.width=wcw;
+  weightCanvasEl.height=190;
 
   if(!values.length){
     document.getElementById('weight-chart-meta').textContent=lang==='zh'?'本月尚無體重記錄':'No weight data this month';
@@ -1450,13 +1448,13 @@ function renderChart(){
 }
 
 function buildChart(labels,values,goal,meta,accent,accentFade,goalColor,redFade,dataLabel,weeksMeta){
-  const ctx=document.getElementById('chart').getContext('2d');
+  const canvasEl=document.getElementById('chart');
+  const ctx=canvasEl.getContext('2d');
   if(chartInstance){chartInstance.destroy();chartInstance=null;}
-  // Set explicit pixel size so chart renders correctly regardless of panel visibility timing
-  const wrap=document.getElementById('chart').parentElement;
-  const cw=wrap.offsetWidth||document.querySelector('.content').offsetWidth||320;
-  document.getElementById('chart').width=cw;
-  document.getElementById('chart').height=190;
+  // Use window.innerWidth minus app padding — reliable even when panel is hidden
+  const cw=Math.max(window.innerWidth-48,200);
+  canvasEl.width=cw;
+  canvasEl.height=190;
 
   const nonZero=values.filter(v=>v>0);
   const goalLine={
