@@ -193,7 +193,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .chart-controls-top{display:flex;align-items:center;gap:4px;width:100%}
 .chart-controls-bottom{display:flex;gap:6px;justify-content:flex-end}
 .chart-wrap{position:relative;height:190px;margin-bottom:6px}
-canvas#chart,canvas#weight-chart{display:block;height:190px!important}
+canvas#chart{width:100%!important;height:190px!important}
 .chart-meta{font-size:12px;color:var(--text3);text-align:center;margin-bottom:4px}
 .chart-meta span{font-weight:600;color:var(--accent)}
 .breadcrumb{font-size:12px;color:var(--text3);margin-bottom:10px;display:flex;align-items:center;gap:4px}
@@ -748,11 +748,7 @@ function switchTab(t){
   document.querySelectorAll('.tab').forEach((b,i)=>b.classList.toggle('active',['calories','events','weight','overview'][i]===t));
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('panel-'+t).classList.add('active');
-  if(t==='overview'){
-    if(chartInstance){chartInstance.destroy();chartInstance=null;}
-    if(weightChartInstance){weightChartInstance.destroy();weightChartInstance=null;}
-    renderOverview();
-  }
+  if(t==='overview') renderOverview();
   if(t==='weight'){weightWeekOffset=0;renderWeightPanel();}
 }
 
@@ -1207,10 +1203,6 @@ function renderWeightChart(){
 
   const weightCanvasEl=document.getElementById('weight-chart');
   if(weightChartInstance){weightChartInstance.destroy();weightChartInstance=null;}
-  // Set dimensions BEFORE getContext
-  const wcw=Math.max(window.innerWidth-48,200);
-  weightCanvasEl.width=wcw;
-  weightCanvasEl.height=190;
   const ctx=weightCanvasEl.getContext('2d');
 
   if(!values.length){
@@ -1237,7 +1229,7 @@ function renderWeightChart(){
       fill:true,backgroundColor:accentFade,tension:0.3
     }]},
     options:{
-      responsive:false,maintainAspectRatio:false,
+      responsive:true,maintainAspectRatio:false,
       plugins:{
         legend:{display:false},
         tooltip:{callbacks:{label:ctx=>`${ctx.parsed.y.toFixed(1)} kg`}},
@@ -1450,10 +1442,6 @@ function renderChart(){
 function buildChart(labels,values,goal,meta,accent,accentFade,goalColor,redFade,dataLabel,weeksMeta){
   const canvasEl=document.getElementById('chart');
   if(chartInstance){chartInstance.destroy();chartInstance=null;}
-  // Set dimensions BEFORE getContext — resetting canvas.width invalidates existing ctx
-  const cw=Math.max(window.innerWidth-48,200);
-  canvasEl.width=cw;
-  canvasEl.height=190;
   const ctx=canvasEl.getContext('2d');
 
   const nonZero=values.filter(v=>v>0);
@@ -1490,7 +1478,7 @@ function buildChart(labels,values,goal,meta,accent,accentFade,goalColor,redFade,
   chartInstance=new Chart(ctx,{
     data:{labels,datasets:[mainLine,goalLine]},
     options:{
-      responsive:false,maintainAspectRatio:false,
+      responsive:true,maintainAspectRatio:false,
       plugins:{
         legend:{display:false},
         inlineLabels:{
@@ -1813,13 +1801,9 @@ function applyLang(){
   renderEvents();
   renderWeightPanel();
   updateCalc();
-  // re-render charts if overview is visible (language switch must refresh chart labels & week labels)
+  // re-render charts if overview is visible
   const ovPanel=document.getElementById('panel-overview');
-  if(ovPanel&&ovPanel.classList.contains('active')){
-    if(chartInstance){chartInstance.destroy();chartInstance=null;}
-    if(weightChartInstance){weightChartInstance.destroy();weightChartInstance=null;}
-    renderOverview();
-  }
+  if(ovPanel&&ovPanel.classList.contains('active')) renderOverview();
 }
 function save(){saveData()}
 lang=data.lang||'en';
