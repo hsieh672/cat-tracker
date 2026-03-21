@@ -1339,19 +1339,37 @@ function renderOverview(){
   renderOvKcalChart();
   renderOvWtChart();
   const L=I18N[lang];
-  const rules={bath:{days:14,key:'bath'},vet:{days:365,key:'vet'},checkup:{days:365,key:'checkup'},vaccine:{days:365,key:'vaccine'}};
+  // 「即將到來」只顯示有設定重複的事件的下一次預計日期
   const upcoming=[];
-  Object.entries(rules).forEach(([type,r])=>{
-    const last=events.filter(e=>e.type===type).sort((a,b)=>b.date.localeCompare(a.date));
-    if(last.length){
-      const next=new Date(last[0].date);next.setDate(next.getDate()+r.days);
-      const diff=Math.round((next-now)/864e5);
-      upcoming.push({label:L.evtTypes[r.key],date:next.toISOString().split('T')[0],diff});
-    }
+  const recurDays={daily:1,weekly:7,biweekly:14,monthly:30};
+  events.forEach(e=>{
+    if(!e.recur||e.recur==='none') return;
+    const days=e.recur==='custom'?+e.customDays:recurDays[e.recur];
+    if(!days) return;
+    // 從事件日期往後推，找到第一個未來的下一次
+    const base=new Date(e.date);
+    let next=new Date(base);
+    // 往後推直到超過今天
+    while(next<=now) next.setDate(next.getDate()+days);
+    const diff=Math.round((next-now)/864e5);
+    upcoming.push({
+      label:L.evtTypes[e.type]||e.type,
+      note:e.note,
+      date:localDateStr(next),
+      diff
+    });
   });
-  upcoming.sort((a,b)=>a.diff-b.diff);
+  // 去重：同類型只留最近一筆
+  const seen=new Set();
+  const deduped=upcoming.filter(u=>{
+    const k=u.label;
+    if(seen.has(k)) return false;
+    seen.add(k);
+    return true;
+  });
+  deduped.sort((a,b)=>a.diff-b.diff);
   const upEl=document.getElementById('upcoming-list');
-  upEl.innerHTML=upcoming.length?upcoming.map(u=>{
+  upEl.innerHTML=deduped.length?deduped.map(u=>{
     const cls=u.diff<0?'overdue':u.diff<=7?'soon':'ok';
     const txt=u.diff<0?`${Math.abs(u.diff)} ${L.dOverdue}`:u.diff===0?L.today:L.inDays.replace('{n}',u.diff);
     return`<div class="upcoming-item"><span style="font-weight:500">${u.label}</span><span style="font-size:12px;color:var(--text3)">${u.date}</span><span class="days-pill ${cls}">${txt}</span></div>`;
