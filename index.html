@@ -1254,52 +1254,57 @@ function ovKcalNav(dir){
   renderOvKcalChart();
 }
 
-// ── Overview weight bar chart (weekly) ─────────
+// ── Overview weight bar chart (weekly, by month) ─
 function renderOvWtChart(){
   const now=new Date();
   const MS=monthsShort();
   const accent='#3b2314';
-  // 每頁12週，offset單位是12週
-  const weeksPerPage=12;
-  const endWeekOffset=ovWtOffset*weeksPerPage; // 往前N週的結束點
-  // 從今天往前 endWeekOffset 週是結束，再往前 weeksPerPage 週是開始
-  const endMon=new Date(now);
-  // 找今週的週一
-  const dow=endMon.getDay()||7;
-  endMon.setDate(endMon.getDate()-(dow-1)); // 這週週一
-  endMon.setDate(endMon.getDate()+endWeekOffset*7); // 往前
 
+  // ovWtOffset: 0=本月, -1=上個月, ... min=-11
+  const target=new Date(now.getFullYear(),now.getMonth()+ovWtOffset,1);
+  const y=target.getFullYear(), m=target.getMonth();
+
+  // 標題
+  const monthLbl=lang==='zh'?`${y}年${m+1}月`:`${MS[m]} ${y}`;
+  document.getElementById('ov-wt-label').textContent=monthLbl;
+
+  const minOff=-11, maxOff=0;
+  document.getElementById('ov-wt-prev').disabled=ovWtOffset<=minOff;
+  document.getElementById('ov-wt-prev').style.opacity=ovWtOffset<=minOff?'0.3':'1';
+  document.getElementById('ov-wt-next').disabled=ovWtOffset>=maxOff;
+  document.getElementById('ov-wt-next').style.opacity=ovWtOffset>=maxOff?'0.3':'1';
+
+  // 找當月第一個週一（可能在上月底）
+  const firstDay=new Date(y,m,1);
+  const dow=firstDay.getDay()||7; // 1=Mon ... 7=Sun
+  const firstMon=new Date(y,m,1-(dow-1));
+
+  // 收集當月所有週一（週一在當月內）
   const weeks=[];
-  for(let i=weeksPerPage-1;i>=0;i--){
-    const mon=new Date(endMon);
-    mon.setDate(endMon.getDate()-i*7);
-    const key=localDateStr(mon);
-    const val=weightLog[key]||null;
-    const sun=new Date(mon);sun.setDate(mon.getDate()+6);
-    const lbl=lang==='zh'?`${mon.getDate()}`:`${mon.getDate()}`;
-    const monthLbl=lang==='zh'?`${mon.getMonth()+1}月`:`${MS[mon.getMonth()]}`;
-    // 顯示月份標籤：每頁第一個或月份變化時
-    const showMonth=i===weeksPerPage-1||(i<weeksPerPage-1&&mon.getMonth()!==new Date(endMon.getTime()-i*7*864e5+7*864e5).getMonth());
-    weeks.push({key,val,lbl,monthLbl,showMonth,mon,sun,isCurrentWeek:i===0&&ovWtOffset===0});
+  let wIdx=0;
+  let cur=new Date(firstMon);
+  while(true){
+    // 這週的週一在當月內才算
+    if(cur.getMonth()===m&&cur.getFullYear()===y){
+      wIdx++;
+      const key=localDateStr(cur);
+      const val=weightLog[key]||null;
+      const sun=new Date(cur);sun.setDate(cur.getDate()+6);
+      const wLabel=lang==='zh'?`第${wIdx}週`:`W${wIdx}`;
+      const isCurrent=key===localDateStr(getWeekMonday(0));
+      weeks.push({key,val,wLabel,mon:new Date(cur),sun,isCurrent});
+    }
+    cur.setDate(cur.getDate()+7);
+    if(cur.getMonth()!==m||cur.getFullYear()!==y) break;
   }
-
-  // 日期範圍 label
-  const first=weeks[0].mon, last=weeks[weeksPerPage-1].sun;
-  const rangeLbl=lang==='zh'
-    ?`${first.getFullYear()}/${first.getMonth()+1}/${first.getDate()} – ${last.getMonth()+1}/${last.getDate()}`
-    :`${MS[first.getMonth()]} ${first.getDate()} – ${MS[last.getMonth()]} ${last.getDate()} ${last.getFullYear()}`;
-  document.getElementById('ov-wt-label').textContent=rangeLbl;
-  document.getElementById('ov-wt-prev').disabled=ovWtOffset<=-4;
-  document.getElementById('ov-wt-prev').style.opacity=ovWtOffset<=-4?'0.3':'1';
-  document.getElementById('ov-wt-next').disabled=ovWtOffset>=0;
-  document.getElementById('ov-wt-next').style.opacity=ovWtOffset>=0?'0.3':'1';
 
   const vals=weeks.map(w=>w.val).filter(v=>v!==null);
   if(!vals.length){
-    document.getElementById('ov-wt-chart').innerHTML=`<div style="flex:1;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:13px">${lang==='zh'?'尚無體重記錄':'No weight data'}</div>`;
+    document.getElementById('ov-wt-chart').innerHTML=`<div style="flex:1;display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:13px">${lang==='zh'?'本月尚無體重記錄':'No weight data this month'}</div>`;
     document.getElementById('ov-wt-meta').textContent='';
     return;
   }
+
   const minVal=Math.min(...vals), maxVal=Math.max(...vals);
   const range=maxVal-minVal||1;
   const chartMin=minVal-range*0.2;
@@ -1314,20 +1319,19 @@ function renderOvWtChart(){
   document.getElementById('ov-wt-chart').innerHTML=weeks.map(w=>{
     const pct=w.val!==null?Math.max(4,Math.round((w.val-chartMin)/chartRange*100)):0;
     const hasVal=w.val!==null;
-    return`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:1px">
-      <div style="font-size:7px;color:${hasVal?accent:'transparent'};font-weight:600;line-height:1">${hasVal?w.val:'-'}</div>
-      <div style="width:100%;flex:1;display:flex;align-items:flex-end">
-        <div style="width:100%;height:${pct}%;background:${accent};opacity:${w.isCurrentWeek?1:0.6};border-radius:2px 2px 0 0;min-height:${hasVal?4:0}px"></div>
+    return`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px">
+      <div style="font-size:11px;color:${hasVal?accent:'var(--text3)'};font-weight:600;line-height:1">${hasVal?w.val+' kg':'—'}</div>
+      <div style="width:70%;flex:1;display:flex;align-items:flex-end">
+        <div style="width:100%;height:${pct}%;background:${accent};opacity:${w.isCurrent?1:0.6};border-radius:3px 3px 0 0;min-height:${hasVal?4:0}px"></div>
       </div>
-      <div style="font-size:8px;color:var(--text3)">${w.lbl}</div>
-      <div style="font-size:7px;color:var(--text3);opacity:0.8">${w.showMonth?w.monthLbl:''}</div>
+      <div style="font-size:11px;color:var(--text3);font-weight:600">${w.wLabel}</div>
     </div>`;
   }).join('');
 }
 
 function ovWtNav(dir){
   const next=ovWtOffset+dir;
-  if(next<-4||next>0) return;
+  if(next<-11||next>0) return;
   ovWtOffset=next;
   renderOvWtChart();
 }
