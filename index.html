@@ -1130,10 +1130,8 @@ function addEvent(){
   document.getElementById('evt-date-m').value=String(NOW.getMonth()+1).padStart(2,'0');
   updateDayOptions();
   document.getElementById('evt-date-d').value=String(NOW.getDate()).padStart(2,'0');
-  // 重設時間為 allday
-  timeMode='allday';
-  document.getElementById('allday-toggle').checked=true;
-  document.getElementById('time-range-wrap').classList.add('hidden');
+  // 重設時間為 all day
+  setTimeMode('allday');
   saveData();renderEvents();
 }
 function delEvent(id){
